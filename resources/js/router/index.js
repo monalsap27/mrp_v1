@@ -10,7 +10,7 @@ import Router from 'vue-router';
 Vue.use(Router);
 
 /* Layout */
-import Layout from '@/layout';
+import Layout from '@/desktop';
 
 /* Router for modules */
 import elementUiRoutes from './modules/element-ui';
@@ -82,11 +82,11 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'dashboard',
+    redirect: 'desktop',
     children: [
       {
-        path: 'dashboard',
-        component: () => import('@/views/dashboard/index'),
+        path: 'desktop',
+        component: () => import('@/views/desktop/index'),
         name: 'Dashboard',
         meta: { title: 'dashboard', icon: 'dashboard', noCache: false },
       },
