@@ -9267,7 +9267,7 @@
     "exec-sh" "^0.2.0"
     "minimist" "^1.2.0"
 
-"watchpack@^2.4.0":
+"watchpack@^2.3.1":
   "integrity" "sha512-Lcvm7MGST/4fup+ifyKi2hjyIAwcdI4HRgtvTpIUxBRhB+RFtUh8XtDOxUfctVCnhVi+QQj49i91OyvzkJl6cg=="
   "resolved" "https://registry.npmjs.org/watchpack/-/watchpack-2.4.0.tgz"
   "version" "2.4.0"
