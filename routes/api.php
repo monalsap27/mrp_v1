@@ -18,7 +18,7 @@ use \App\Laravue\Acl;
 |
 */
 
-Route::namespace('Api')->group(function() {
+Route::namespace('Api')->group(function () {
     Route::post('auth/login', 'AuthController@login');
     Route::group(['middleware' => 'auth:sanctum'], function () {
         // Auth routes
@@ -37,7 +37,7 @@ Route::namespace('Api')->group(function() {
         // Custom routes
         Route::put('users/{user}', 'UserController@update');
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-        Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' .Acl::PERMISSION_PERMISSION_MANAGE);
+        Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
     });
 });
@@ -147,3 +147,6 @@ Route::get('articles/{id}/pageviews', function ($id) {
 
     return response()->json(new JsonResponse(['pvData' => $data]));
 });
+
+
+require __DIR__ . '/product.php';
