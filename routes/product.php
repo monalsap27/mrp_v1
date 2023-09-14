@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use \App\Laravue\Acl;
-use App\Http\Controllers\Api\Product\Master\{CatergoriesController, UnitController, MaterialController, TypeController};
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\Product\Master\{CatergoriesController, UnitController, WorkstationController, TypeController};
 
 
 // Route::namespace('Api')->group(['middleware' => 'auth:sanctum'], function () {
@@ -18,10 +18,10 @@ Route::group(['prefix' => '/product', 'as' => 'product'], function () {
             Route::post('/store', [UnitController::class, 'store'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
             Route::post('/delete', [UnitController::class, 'destroy'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         });
-        Route::group(['prefix' => '/material', 'as' => '.master'], function () {
-            Route::get('/data', [MaterialController::class, 'data'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-            Route::post('/store', [MaterialController::class, 'store'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
-            Route::post('/delete', [MaterialController::class, 'destroy'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+        Route::group(['prefix' => '/workstation', 'as' => '.master'], function () {
+            Route::get('/data', [WorkstationController::class, 'data'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+            Route::post('/store', [WorkstationController::class, 'store'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+            Route::post('/delete', [WorkstationController::class, 'destroy'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         });
         Route::group(['prefix' => '/type', 'as' => '.master'], function () {
             Route::get('/data', [TypeController::class, 'data'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);

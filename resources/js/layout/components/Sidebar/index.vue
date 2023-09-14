@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'has-logo':showLogo}">
+  <div :class="{ 'has-logo': showLogo }">
     <logo v-if="showLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
@@ -27,7 +27,6 @@ import { mapGetters } from 'vuex';
 import SidebarItem from './SidebarItem';
 import Logo from './Logo';
 import variables from '@/styles/variables.scss';
-
 export default {
   components: { SidebarItem, Logo },
   computed: {
@@ -49,5 +48,5 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-  @import '@/styles/variables.scss';
+@import '@/styles/variables.scss';
 </style>

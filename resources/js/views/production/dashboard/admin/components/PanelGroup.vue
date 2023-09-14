@@ -1,34 +1,28 @@
 <template>
   <el-row :gutter="40" class="panel-group">
-    <h1
-      style="
-        text-align: center;
-        color: blue;
-        margin-top: -100px;
-        margin-bottom: 5rem;
-      "
-    >
-      <img src="../../../../assets/logocobra2.png" width="15%" alt="">
-    </h1>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="logout">
+      <div class="card-panel" @click="handleSetLineChartData('newVisitis')">
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Sales</div>
-          <!-- <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" /> -->
+          <div class="card-panel-text">
+            New Visits
+          </div>
+          <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="production">
+      <div class="card-panel" @click="handleSetLineChartData('messages')">
         <div class="card-panel-icon-wrapper icon-message">
-          <svg-icon icon-class="component" class-name="card-panel-icon" />
+          <svg-icon icon-class="message" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Production</div>
-          <!-- <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" /> -->
+          <div class="card-panel-text">
+            Messages
+          </div>
+          <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" />
         </div>
       </div>
     </el-col>
@@ -38,46 +32,39 @@
           <svg-icon icon-class="money" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Purchasing</div>
-          <!-- <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" /> -->
+          <div class="card-panel-text">
+            Purchases
+          </div>
+          <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" />
         </div>
       </div>
     </el-col>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
       <div class="card-panel" @click="handleSetLineChartData('shoppings')">
         <div class="card-panel-icon-wrapper icon-shopping">
-          <svg-icon icon-class="tree" class-name="card-panel-icon" />
+          <svg-icon icon-class="shopping" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Vendor</div>
-          <!-- <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" /> -->
+          <div class="card-panel-text">
+            Shoppings
+          </div>
+          <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" />
         </div>
       </div>
     </el-col>
-
-    <h4 style="text-align: center">FOOTER</h4>
   </el-row>
 </template>
+
 <script>
-// import CountTo from 'vue-count-to';
+import CountTo from 'vue-count-to';
 
 export default {
+  components: {
+    CountTo,
+  },
   methods: {
-    async logout() {
-      await this.$store.dispatch('user/logout');
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
-    },
-
-    async production() {
-      this.$router.push(`/production`, {
-        name: 'production.index',
-        params: { module: 'production' },
-      });
-    },
-
-    async dokumen() {
-      await this.$store.dispatch('https://github.com/tuandm/laravue/');
-      // this.$router.push(`/login?redirect=${this.$route.fullPath}`);
+    handleSetLineChartData(type) {
+      this.$emit('handleSetLineChartData', type);
     },
   },
 };
@@ -85,26 +72,26 @@ export default {
 
 <style rel="stylesheet/scss" lang="scss" scoped>
 .panel-group {
-  margin-top: 100px;
-  .card-panel-col {
-    margin-bottom: 140px;
+  margin-top: 18px;
+  .card-panel-col{
+    margin-bottom: 32px;
   }
   .card-panel {
-    height: 208px;
+    height: 108px;
     cursor: pointer;
     font-size: 12px;
     position: relative;
     overflow: hidden;
     color: #666;
     background: #fff;
-    box-shadow: 4px 4px 40px rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 4px 4px 40px rgba(0, 0, 0, .05);
+    border-color: rgba(0, 0, 0, .05);
     &:hover {
       .card-panel-icon-wrapper {
         color: #fff;
       }
       .icon-people {
-        background: #40c9c6;
+         background: #40c9c6;
       }
       .icon-message {
         background: #36a3f7;
@@ -113,7 +100,7 @@ export default {
         background: #f4516c;
       }
       .icon-shopping {
-        background: #34bfa3;
+        background: #34bfa3
       }
     }
     .icon-people {
@@ -126,22 +113,18 @@ export default {
       color: #f4516c;
     }
     .icon-shopping {
-      color: #34bfa3;
+      color: #34bfa3
     }
     .card-panel-icon-wrapper {
       float: left;
-      // margin: 2rem 0 0 14px;
-      margin-top: 2.5rem;
-      margin-left: 14px;
+      margin: 14px 0 0 14px;
       padding: 16px;
-      // margin-top: 2rem;
       transition: all 0.38s ease-out;
       border-radius: 6px;
     }
     .card-panel-icon {
       float: left;
-      // padding-top: 2rem;
-      font-size: 98px;
+      font-size: 48px;
     }
     .card-panel-description {
       float: right;

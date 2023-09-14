@@ -16,13 +16,15 @@ import Layout from '@/desktop';
 // import elementUiRoutes from './modules/element-ui';
 // import componentRoutes from './modules/components';
 // import chartsRoutes from './modules/charts';
+
 // import tableRoutes from './modules/table';
 import adminRoutes from './modules/admin';
 // import nestedRoutes from './modules/nested';
 // import errorRoutes from './modules/error';
 // import excelRoutes from './modules/excel';
 import permissionRoutes from './modules/permission';
-import productMaster from './modules/product-master';
+import productionRoute from './modules/production/index';
+import productionMaster from './modules/production/master';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -84,6 +86,7 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'desktop',
+    hidden: true,
     children: [
       {
         path: 'desktop',
@@ -133,8 +136,8 @@ export const constantRoutes = [
   //   ],
   // },
   // elementUiRoutes,
-  productMaster,
 ];
+export const asyncRoutesProduction = [productionRoute, productionMaster];
 
 export const asyncRoutes = [
   permissionRoutes,

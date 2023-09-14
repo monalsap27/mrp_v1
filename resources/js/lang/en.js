@@ -71,6 +71,7 @@ export default {
     users: 'Users',
     userProfile: 'User Profile',
     productMaster: 'Master',
+    productionRoute: 'Production',
   },
   navbar: {
     logOut: 'Log Out',

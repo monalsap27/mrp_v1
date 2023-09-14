@@ -8,57 +8,57 @@ use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Product\MasterResource;
-use App\Laravue\Models\Product\Master\Material;
+use App\Laravue\Models\Product\Master\Workstation;
 
-class MaterialController extends Controller
+class WorkstationController extends Controller
 {
     const ITEM_PER_PAGE = 15;
     public function data(Request $request)
     {
         $searchParams = $request->all();
-        $materialQuery = Material::query();
+        $workstationQuery = Workstation::query();
         $sort = Arr::get($searchParams, 'sort', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         if (!empty($keyword)) {
-            $materialQuery->where('name', 'LIKE', '%' . $keyword . '%');
-            $materialQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
-            $materialQuery->orWhere('code', 'LIKE', '%' . $keyword . '%');
+            $workstationQuery->where('name', 'LIKE', '%' . $keyword . '%');
+            $workstationQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
+            $workstationQuery->orWhere('code', 'LIKE', '%' . $keyword . '%');
         }
         if ($sort == '-id') {
-            $materialQuery->orderBy('id', 'desc');
+            $workstationQuery->orderBy('id', 'desc');
         } else {
-            $materialQuery->orderBy('id', 'asc');
+            $workstationQuery->orderBy('id', 'asc');
         }
-        return MasterResource::collection($materialQuery->paginate($limit));
+        return MasterResource::collection($workstationQuery->paginate($limit));
     }
     public function store(Request $request)
     {
         $params     = $request->all();
         if (empty($params['id'])) {
-            $material = Material::create([
+            $workstation = Workstation::create([
                 'name'        => $params['name'],
                 'code'        => $params['code'],
                 'description' => $params['description'],
                 'created_by'  => Auth::user()->id
             ]);
         } else {
-            $material = Material::find($params['id']);
-            $material->name        = $params['name'];
-            $material->code        = $params['code'];
-            $material->description = $params['description'];
-            $material->updated_by  = Auth::user()->id;
-            $material->save();
+            $workstation = Workstation::find($params['id']);
+            $workstation->name        = $params['name'];
+            $workstation->code        = $params['code'];
+            $workstation->description = $params['description'];
+            $workstation->updated_by  = Auth::user()->id;
+            $workstation->save();
         }
-        return new MasterResource($material);
+        return new MasterResource($workstation);
     }
     public function destroy(Request $request)
     {
         try {
-            $material = Material::find($request->id);
-            $material->deleted_by = Auth::user()->id;
-            $material->deleted_at = new DateTime();
-            $material->save();
+            $workstation = Workstation::find($request->id);
+            $workstation->deleted_by = Auth::user()->id;
+            $workstation->deleted_at = new DateTime();
+            $workstation->save();
         } catch (\Exception $ex) {
             \DB::rollBack();
             return response()->json(['error' => $ex->getMessage()], 403);

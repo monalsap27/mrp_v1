@@ -72,7 +72,7 @@
             type="warning"
             size="small"
             icon="el-icon-edit"
-            @click="handleEditMaterial(scope.row.id)"
+            @click="handleEditWorkstation(scope.row.id)"
           >
             Edit
           </el-button>
@@ -95,43 +95,65 @@
       @pagination="getList"
     />
     <el-dialog
-      :title="'Create new material'"
+      :title="'Create new workstation'"
       :visible.sync="dialogFormVisible"
-      width="30%"
+      width="60%"
     >
-      <div v-loading="materialCreating" class="form-container">
+      <div v-loading="workstationCreating" class="form-container">
         <el-form
-          ref="materialForm"
+          ref="workstationForm"
           :rules="rules"
-          :model="newMaterial"
+          :model="newWorkstation"
           label-position="left"
           label-width="150px"
           style="max-width: 100%"
         >
-          <el-form-item :label="$t('Name')" prop="name">
-            <el-input
-              v-model="newMaterial.name"
-              placeholder="type name here"
-            />
-          </el-form-item>
-          <el-form-item :label="$t('Code')" prop="code">
-            <el-input
-              v-model="newMaterial.code"
-              placeholder="type code here"
-            />
-          </el-form-item>
-          <el-form-item :label="$t('Description')" prop="description">
-            <el-input
-              v-model="newMaterial.description"
-              placeholder="type description here"
-            />
-          </el-form-item>
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <el-form-item :label="$t('Name')" prop="name">
+                <el-input
+                  v-model="newWorkstation.name"
+                  placeholder="type name here"
+                />
+              </el-form-item>
+              <el-form-item :label="$t('Code')" prop="code">
+                <el-input
+                  v-model="newWorkstation.code"
+                  placeholder="type code here"
+                />
+              </el-form-item>
+              <el-form-item :label="$t('Description')" prop="description">
+                <el-input
+                  v-model="newWorkstation.description"
+                  placeholder="type description here"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item :label="$t('Code')" prop="code">
+                <el-input
+                  v-model="newWorkstation.code"
+                  placeholder="type code here"
+                />
+              </el-form-item>
+              <el-form-item :label="$t('Code')" prop="code">
+                <el-input
+                  v-model="newWorkstation.code"
+                  placeholder="type code here"
+                />
+              </el-form-item>
+              <el-form-item :label="$t('Description')" prop="description">
+                <el-input
+                  v-model="newWorkstation.description"
+                  placeholder="type description here"
+                /> </el-form-item></el-col>
+          </el-row>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="createMaterial()">
+          <el-button type="primary" @click="createWorkstation()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -139,34 +161,34 @@
     </el-dialog>
 
     <el-dialog
-      :title="'Edit Material '"
+      :title="'Edit Workstation '"
       :visible.sync="dialogEditVisible"
       width="30%"
     >
-      <div v-loading="materialEdit" class="form-container">
+      <div v-loading="workstationEdit" class="form-container">
         <el-form
-          ref="materialFormEdit"
+          ref="workstationFormEdit"
           :rules="rules"
-          :model="currentMaterial"
+          :model="currentWorkstation"
           label-position="left"
           label-width="150px"
           style="max-width: 100%"
         >
           <el-form-item :label="$t('Name')" prop="name">
             <el-input
-              v-model="currentMaterial.name"
+              v-model="currentWorkstation.name"
               placeholder="type name here"
             />
           </el-form-item>
           <el-form-item :label="$t('Code')" prop="code">
             <el-input
-              v-model="currentMaterial.code"
+              v-model="currentWorkstation.code"
               placeholder="type code here"
             />
           </el-form-item>
           <el-form-item :label="$t('Description')" prop="description">
             <el-input
-              v-model="currentMaterial.description"
+              v-model="currentWorkstation.description"
               placeholder="type description here"
             />
           </el-form-item>
@@ -175,7 +197,7 @@
           <el-button @click="dialogEditVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="updateMaterial()">
+          <el-button type="primary" @click="updateWorkstation()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -188,12 +210,12 @@
 import Pagination from '@/components/Pagination'; // Secondary package based on el-pagination
 import {
   fetchList,
-  createOrUpdateMaterial,
-  DeleteMaterial,
-} from '@/api/product/master/material';
+  createOrUpdateWorkstation,
+  DeleteWorkstation,
+} from '@/api/product/master/workstation';
 
 export default {
-  name: 'MaterialList',
+  name: 'WorkstationList',
   components: { Pagination },
   filters: {
     statusFilter(status) {
@@ -210,12 +232,12 @@ export default {
       total: 0,
       list: null,
       listLoading: true,
-      materialEdit: false,
-      materialCreating: false,
+      workstationEdit: false,
+      workstationCreating: false,
       dialogFormVisible: false,
       dialogEditVisible: false,
-      newMaterial: {},
-      currentMaterial: {},
+      newWorkstation: {},
+      currentWorkstation: {},
       query: {
         page: 1,
         limit: 15,
@@ -250,17 +272,17 @@ export default {
       this.query.page = 1;
       this.getList();
     },
-    createMaterial() {
-      this.$refs['materialForm'].validate((valid) => {
+    createWorkstation() {
+      this.$refs['workstationForm'].validate((valid) => {
         if (valid) {
-          this.newMaterial.roles = [this.newMaterial.role];
-          this.materialCreating = true;
-          createOrUpdateMaterial(this.newMaterial)
+          this.newWorkstation.roles = [this.newWorkstation.role];
+          this.workstationCreating = true;
+          createOrUpdateWorkstation(this.newWorkstation)
             .then((response) => {
               this.$message({
                 message:
-                  'New material ' +
-                  this.newMaterial.name +
+                  'New workstation ' +
+                  this.newWorkstation.name +
                   ' has been created successfully.',
                 type: 'success',
                 duration: 5 * 1000,
@@ -273,7 +295,7 @@ export default {
               console.log(error);
             })
             .finally(() => {
-              this.materialCreating = false;
+              this.workstationCreating = false;
             });
         } else {
           console.log('error submit!!');
@@ -298,43 +320,43 @@ export default {
       }
     },
     resetNewForm() {
-      this.newMaterial = {
+      this.newWorkstation = {
         id: '',
         name: '',
         description: '',
-        role: 'material',
+        role: 'workstation',
       };
     },
     handleCreate() {
       this.resetNewForm();
       this.dialogFormVisible = true;
       this.$nextTick(() => {
-        this.$refs['materialForm'].clearValidate();
+        this.$refs['workstationForm'].clearValidate();
       });
     },
-    async handleEditMaterial(id) {
+    async handleEditWorkstation(id) {
       this.currentId = id;
-      this.materialEdit = true;
+      this.workstationEdit = true;
       this.dialogEditVisible = true;
-      const foundMaterial = this.list.find(
-        (material) => material.id === id
+      const foundWorkstation = this.list.find(
+        (workstation) => workstation.id === id
       );
-      this.currentMaterial = {
-        id: foundMaterial.id,
-        name: foundMaterial.name,
-        code: foundMaterial.code,
-        description: foundMaterial.description,
+      this.currentWorkstation = {
+        id: foundWorkstation.id,
+        name: foundWorkstation.name,
+        code: foundWorkstation.code,
+        description: foundWorkstation.description,
       };
-      this.materialEdit = false;
+      this.workstationEdit = false;
     },
-    updateMaterial() {
-      this.materialEdit = true;
-      createOrUpdateMaterial(this.currentMaterial)
+    updateWorkstation() {
+      this.workstationEdit = true;
+      createOrUpdateWorkstation(this.currentWorkstation)
         .then((response) => {
           this.$message({
             message:
-              'Material ' +
-              this.currentMaterial.name +
+              'Workstation ' +
+              this.currentWorkstation.name +
               ' has been updated successfully.',
             type: 'success',
             duration: 5 * 1000,
@@ -347,7 +369,7 @@ export default {
           console.log(error);
         })
         .finally(() => {
-          this.materialEdit = false;
+          this.workstationEdit = false;
         });
     },
 
@@ -362,7 +384,7 @@ export default {
         }
       )
         .then(() => {
-          DeleteMaterial(id)
+          DeleteWorkstation(id)
             .then((response) => {
               this.$message({
                 type: 'success',
@@ -397,7 +419,6 @@ export default {
 .dialog-footer {
   text-align: left;
   padding-top: 0;
-  margin-left: 150px;
 }
 .app-container {
   flex: 1;

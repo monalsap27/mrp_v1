@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Material extends Model
+class Workstation extends Model
 {
     use SoftDeletes;
     use HasFactory;
-    protected $table = 'product.m_material';
-    protected $fillable = ['name', 'code', 'description', 'created_by', 'updated_by', 'deleted_by'];
+    protected $table = 'product.workstation';
+    protected $fillable = ['name', 'code', 'description', 'code', 'timing', 'created_by', 'updated_by', 'deleted_by'];
 }

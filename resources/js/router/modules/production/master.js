@@ -1,19 +1,19 @@
 import Layout from '@/layout';
 
 const productMaster = {
-  path: '/product-master',
+  path: '/production-master',
   component: Layout,
-  redirect: '/product-master/categories',
+  redirect: '/production-master/categories',
   name: 'Mater',
   meta: {
-    title: 'productMaster',
+    title: 'Master',
     icon: 'component',
     permissions: ['view menu product master'],
   },
   children: [
     {
       path: 'categories',
-      component: () => import('@/views/product/master/categories/List'),
+      component: () => import('@/views/production/master/categories/List'),
       name: 'CategoriesList',
       meta: {
         title: 'Categories',
@@ -23,7 +23,7 @@ const productMaster = {
     },
     {
       path: 'unit',
-      component: () => import('@/views/product/master/unit/List'),
+      component: () => import('@/views/production/master/unit/List'),
       name: 'UnitList',
       meta: {
         title: 'Unit',
@@ -32,23 +32,23 @@ const productMaster = {
       },
     },
     {
-      path: 'material',
-      component: () => import('@/views/product/master/material/List'),
-      name: 'MaterialList',
-      meta: {
-        title: 'Material',
-        icon: 'el-icon-question',
-        permissions: ['manage master material'],
-      },
-    },
-    {
       path: 'type',
-      component: () => import('@/views/product/master/type/List'),
+      component: () => import('@/views/production/master/type/List'),
       name: 'TypeList',
       meta: {
         title: 'Type',
         icon: 'el-icon-s-open',
         permissions: ['manage master type'],
+      },
+    },
+    {
+      path: 'workstation',
+      component: () => import('@/views/production/master/workstation/List'),
+      name: 'WorkstationList',
+      meta: {
+        title: 'Workstation',
+        icon: 'el-icon-question',
+        permissions: ['manage master workstation'],
       },
     },
   ],

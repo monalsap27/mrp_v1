@@ -1,4 +1,4 @@
-import { asyncRoutes, constantRoutes } from '@/router';
+import { asyncRoutes, constantRoutes, asyncRoutesProduction } from '@/router';
 
 /**
  * Check if it matches the current user right by meta.role
@@ -15,11 +15,13 @@ function canAccess(roles, permissions, route) {
       hasRole = false;
       hasPermission = false;
       if (route.meta.roles) {
-        hasRole = roles.some(role => route.meta.roles.includes(role));
+        hasRole = roles.some((role) => route.meta.roles.includes(role));
       }
 
       if (route.meta.permissions) {
-        hasPermission = permissions.some(permission => route.meta.permissions.includes(permission));
+        hasPermission = permissions.some((permission) =>
+          route.meta.permissions.includes(permission)
+        );
       }
     }
 
@@ -38,15 +40,11 @@ function canAccess(roles, permissions, route) {
 function filterAsyncRoutes(routes, roles, permissions) {
   const res = [];
 
-  routes.forEach(route => {
+  routes.forEach((route) => {
     const tmp = { ...route };
     if (canAccess(roles, permissions, tmp)) {
       if (tmp.children) {
-        tmp.children = filterAsyncRoutes(
-          tmp.children,
-          roles,
-          permissions
-        );
+        tmp.children = filterAsyncRoutes(tmp.children, roles, permissions);
       }
       res.push(tmp);
     }
@@ -68,11 +66,14 @@ const mutations = {
 };
 
 const actions = {
-  generateRoutes({ commit }, { roles, permissions }) {
-    return new Promise(resolve => {
+  generateRoutes({ commit }, { routes, roles, permissions }) {
+    console.log(window.location.href);
+
+    return new Promise((resolve) => {
       let accessedRoutes;
       if (roles.includes('admin')) {
-        accessedRoutes = asyncRoutes || [];
+        console.log(routes);
+        accessedRoutes = asyncRoutesProduction || [];
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, permissions);
       }
