@@ -17,7 +17,7 @@
 
 <script>
 import RightPanel from '@/components/RightPanel';
-import { Navbar, Sidebar, AppMain, TagsView, Settings } from './components';
+import { Navbar, Sidebar, AppMain, TagsView, Settings, Footer } from './components';
 import ResizeMixin from './mixin/resize-handler.js';
 import { mapState } from 'vuex';
 
@@ -29,6 +29,8 @@ export default {
     RightPanel,
     Settings,
     Sidebar,
+    // eslint-disable-next-line vue/no-reserved-component-names, vue/no-unused-components
+    Footer,
     TagsView,
   },
   mixins: [ResizeMixin],

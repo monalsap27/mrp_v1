@@ -28,10 +28,10 @@
               alt="Laravue"
               :src="logo"
             >
-            <h3 class="title">
+            <!-- <h3 class="title">
               {{ $t('login.title') }}
-              <!-- <lang-select class="set-language" /> -->
-            </h3>
+              <lang-select class="set-language" />
+            </h3> -->
           </div>
           <el-form-item prop="email">
             <span class="svg-container">
@@ -262,9 +262,12 @@ export default {
 
       .logo {
         display: block;
-        width: 80px;
-        height: 80px;
+        width: 355px;
+        height: 70px;
+        border-radius: 20px;
         margin-bottom: 20px;
+        // box-shadow: 5px 5px 5px #fff;
+        border: 5px solid grey;
       }
 
       .login-image {

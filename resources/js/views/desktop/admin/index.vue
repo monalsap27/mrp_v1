@@ -67,6 +67,7 @@ export default {
 .dashboard-editor-container {
   padding: 32px;
   background-color: rgb(240, 242, 245);
+  // background-color: #464040;
   .chart-wrapper {
     background: #fff;
     padding: 16px 16px 0;

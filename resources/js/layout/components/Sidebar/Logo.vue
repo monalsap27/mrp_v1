@@ -1,4 +1,8 @@
 <template>
+  <!-- <div class="sidebar-logo-container">
+    <h1>LOGO</h1>
+  </div> -->
+
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
@@ -24,8 +28,8 @@ export default {
   },
   data() {
     return {
-      title: 'Laravel Vue Admin',
-      logo: '/svg/logo.svg',
+      title: 'SUMMIT',
+      logo: '/svg/logoS.png',
     };
   },
 };
@@ -59,6 +63,7 @@ export default {
         height: 32px;
         vertical-align: middle;
         margin-right: 12px;
+        border-radius: 5px;
       }
 
       & .sidebar-title {

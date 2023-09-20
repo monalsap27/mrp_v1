@@ -3,6 +3,8 @@
     <!-- <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" /> -->
+    <!-- <h1>COB YUK</h1> -->
+    <img src="../../assets/login/favicon.png" alt="" style="margin-top: -0.1rem; margin-left: 1rem;" width="190px" height="53px">
 
     <div class="right-menu">
       <!-- <template v-if="device!=='mobile'">
