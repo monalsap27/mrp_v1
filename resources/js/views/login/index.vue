@@ -1,24 +1,11 @@
-<!-- <template> -->
-
 <template>
-
   <div class="login">
     <div class="login-container">
-      <!-- <div class="login-image" :style="{ 'background-image': 'url(' + loginBackground + ')' }"> -->
-      <div class="login-image">
-
-        <!-- <div class="user-images"> -->
-        <el-carousel :interval="6000" type="card" height="560px">
-          <el-carousel-item v-for="item in carouselImages" :key="item" style="display:flex; width: auto;">
-            <img :src="item" class="image">
-          </el-carousel-item>
-        </el-carousel>
-        <!-- </div> -->
-
-        <!-- <div class="photo-credit">
-            <h4>Danang - Vietnam</h4>
-            <span>Photo by Kiril Dobrev on Unsplash</span>
-          </div> -->
+      <div class="login-image" :style="{ 'background-image': 'url(' + loginBackground + ')' }">
+        <div class="photo-credit">
+          <h4>Danang - Vietnam</h4>
+          <span>Photo by Kiril Dobrev on Unsplash</span>
+        </div>
       </div>
       <div class="login-content">
         <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
@@ -28,10 +15,10 @@
               alt="Laravue"
               :src="logo"
             >
-            <!-- <h3 class="title">
+            <h3 class="title">
               {{ $t('login.title') }}
               <lang-select class="set-language" />
-            </h3> -->
+            </h3>
           </div>
           <el-form-item prop="email">
             <span class="svg-container">
@@ -80,12 +67,8 @@ import gambar1 from '@/assets/login/1.jpeg';
 import gambar2 from '@/assets/login/2.jpeg';
 import gambar3 from '@/assets/login/3.jpeg';
 
-// import Resource from '@/api/resource';
-// const userResource = new Resource('users');
-
 export default {
   name: 'Login',
-  // eslint-disable-next-line vue/no-unused-components
   components: { LangSelect },
   data() {
     const validateEmail = (rule, value, callback) => {
@@ -103,16 +86,6 @@ export default {
       }
     };
     return {
-
-      activeActivity: 'first',
-      carouselImages: [
-        loginBackground,
-        gambar1,
-        gambar2,
-        gambar3,
-        // 'https://cdn.laravue.dev/photo4.jpg',
-      ],
-      updating: false,
       loginForm: {
         email: 'admin@laravue.dev',
         password: 'laravue',
@@ -121,20 +94,17 @@ export default {
         email: [{ required: true, trigger: 'blur', validator: validateEmail }],
         password: [{ required: true, trigger: 'blur', validator: validatePass }],
       },
-      data:
-        {
-          slide: 0,
-          sliding: null,
-        },
       loading: false,
       pwdType: 'password',
       redirect: undefined,
       otherQuery: {},
       logo: logo,
       loginBackground: loginBackground,
+      gambar1,
+      gambar2,
+      gambar3,
     };
   },
-
   watch: {
     $route: {
       handler: function(route) {
@@ -148,14 +118,6 @@ export default {
     },
   },
   methods: {
-
-    onSlideStart(slide) {
-      this.sliding = true;
-    },
-    onSlideEnd(slide) {
-      this.sliding = false;
-    },
-
     showPwd() {
       if (this.pwdType === 'password') {
         this.pwdType = '';
@@ -196,71 +158,70 @@ export default {
     },
   },
 };
-
 </script>
 
-  <style rel="stylesheet/scss" lang="scss">
-  $bg:#2d3a4b;
-  $light_gray:#eee;
+<style rel="stylesheet/scss" lang="scss">
+$bg:#2d3a4b;
+$light_gray:#eee;
 
-  /* reset element-ui css */
-  .login-container {
-    .el-input {
-      display: inline-block;
+/* reset element-ui css */
+.login-container {
+  .el-input {
+    display: inline-block;
+    height: 47px;
+    width: 85%;
+    input {
+      background: transparent;
+      border: 0px;
+      -webkit-appearance: none;
+      border-radius: 0px;
+      padding: 12px 5px 12px 15px;
+      color: $light_gray;
       height: 47px;
-      width: 85%;
-      input {
-        background: transparent;
-        border: 0px;
-        -webkit-appearance: none;
-        border-radius: 0px;
-        padding: 12px 5px 12px 15px;
-        color: $light_gray;
-        height: 47px;
-        &:-webkit-autofill {
-          -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
-          -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
-        }
+      &:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0px 1000px $bg inset !important;
+        -webkit-text-colorfill-color: rgb(8, 7, 7) !important;
       }
     }
-    .el-form-item {
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      background: rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
-      color: #454545;
-    }
   }
-  </style>
+  .el-form-item {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    color: #454545;
+  }
+}
+</style>
 
-  <style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss" scoped>
 
-  $bg:#2d3a4b;
-  $dark_gray:#889aa4;
-  $light_gray:rgb(7, 6, 6);
-  $bgColor: #054b5d;
-  $brown: #B27C66;
-  $textColor:#eee;
+$bg:#2d3a4b;
+$dark_gray:#889aa4;
+$light_gray:rgb(7, 6, 6);
+$bgColor: #054b5d;
+$brown: #B27C66;
+$textColor:#eee;
 
-  .login {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background-color: $bgColor;
-    transition: background-color .3s ease-in-out;
-    overflow: auto;
+.login {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: $bgColor;
+  transition: background-color .3s ease-in-out;
+  overflow: auto;
 
-    .login-container {
-      background: $bg;
-      width: 1120px;
-      min-height: 590px;
-      display: grid;
-      grid-template-columns: auto 480px;
-      transition: all .3s ease-in-out;
-      transform: scale(1);
+  .login-container {
+    background: $bg;
+    width: 1120px;
+    min-height: 590px;
+    display: grid;
+    grid-template-columns: auto 480px;
+    transition: all .3s ease-in-out;
+    transform: scale(1);
 
-      .logo {
+    .logo {
         display: block;
         width: 355px;
         height: 70px;
@@ -270,102 +231,85 @@ export default {
         border: 5px solid grey;
       }
 
-      .login-image {
-        // display: flex;
-        flex-direction: row;
-        // justify-content: flex-end;
-        overflow: hidden;
-        background-color: #303c4b;
-        background-position: 100%;
-        background-size: cover;
-        opacity: 1;
-        margin-top: 2rem;
-        transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+    .login-image {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      overflow: hidden;
+      background-color: #303c4b;
+      background-position: 50%;
+      background-size: cover;
+      opacity: 1;
+      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
 
-        .photo-credit {
-          justify-content: flex-end;
-          align-self: flex-end;
-          background-color: rgba(255,255,255,0.8);
-          margin: 10px;
-          padding: 5px 8px;
+      .photo-credit {
+        justify-content: flex-end;
+        align-self: flex-end;
+        background-color: rgba(255,255,255,0.8);
+        margin: 10px;
+        padding: 5px 8px;
 
-          h4, span { margin: 0; }
-        }
-      }
-
-      .login-form {
-        min-width: 320px;
-        padding: 130px 60px;
-        position: relative;
-        opacity: 1;
-        transition: opacity .3s ease-in-out,padding .2s ease-in-out;
-      }
-      .tips {
-        font-size: 14px;
-        color: #fff;
-        margin-bottom: 10px;
-        span {
-          &:first-of-type {
-            margin-right: 16px;
-          }
-        }
-      }
-      .svg-container {
-        padding: 6px 5px 6px 15px;
-        color: $dark_gray;
-        vertical-align: middle;
-        width: 30px;
-        display: inline-block;
-      }
-      .title-wrap {
-        display: block;
-        margin-bottom: 15px;
-
-        .title {
-          font-size: 24px;
-          color: $textColor;
-          margin: 0px auto 10px auto;
-          text-align: left;
-          font-weight: bold;
-        }
-        .sub-heading {
-          font-size: 14px;
-          color: $textColor;
-          padding-bottom: 15px;
-        }
-      }
-
-      .show-pwd {
-        position: absolute;
-        right: 10px;
-        top: 7px;
-        font-size: 16px;
-        color: $dark_gray;
-        cursor: pointer;
-        user-select: none;
-      }
-      .set-language {
-        color: $textColor;
-        position: absolute;
-        top: 40px;
-        right: 35px;
+        h4, span { margin: 0; }
       }
     }
 
-  }
-  .el-carousel__item h3 {
-      color: #475669;
+    .login-form {
+      min-width: 320px;
+      padding: 130px 60px;
+      position: relative;
+      opacity: 1;
+      transition: opacity .3s ease-in-out,padding .2s ease-in-out;
+    }
+    .tips {
       font-size: 14px;
-      opacity: 0.75;
-      line-height: 200px;
-      margin: 0;
+      color: #fff;
+      margin-bottom: 10px;
+      span {
+        &:first-of-type {
+          margin-right: 16px;
+        }
+      }
+    }
+    .svg-container {
+      padding: 6px 5px 6px 15px;
+      color: $dark_gray;
+      vertical-align: middle;
+      width: 30px;
+      display: inline-block;
+    }
+    .title-wrap {
+      display: block;
+      margin-bottom: 15px;
+
+      .title {
+        font-size: 24px;
+        color: $textColor;
+        margin: 0px auto 10px auto;
+        text-align: left;
+        font-weight: bold;
+      }
+      .sub-heading {
+        font-size: 14px;
+        color: $textColor;
+        padding-bottom: 15px;
+      }
     }
 
-    .el-carousel__item:nth-child(2n) {
-      background-color: #99a9bf;
+    .show-pwd {
+      position: absolute;
+      right: 10px;
+      top: 7px;
+      font-size: 16px;
+      color: $dark_gray;
+      cursor: pointer;
+      user-select: none;
     }
-
-    .el-carousel__item:nth-child(2n+1) {
-      background-color: #d3dce6;
+    .set-language {
+      color: $textColor;
+      position: absolute;
+      top: 40px;
+      right: 35px;
     }
-  </style>
+  }
+}
+</style>

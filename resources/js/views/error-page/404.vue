@@ -8,18 +8,13 @@
         <img class="pic-404__child right" :src="icon404Cloud" alt="404">
       </div>
       <div class="bullshit">
-        <div class="bullshit__oops">
-          OOPS!
-        </div>
-        <div class="bullshit__info">
-          Copyright by
-          <a class="link-type" href="https://github.com/tuandm/laravue" target="_blank">Laravue</a>
-        </div>
+        <div class="bullshit__oops">OOPS!</div>
         <div class="bullshit__headline">
           {{ message }}
         </div>
         <div class="bullshit__info">
-          Please check that the URL you entered is correct. Please click the button below to return to the homepage or send an error report.
+          Please check that the URL you entered is correct. Please click the
+          button below to return to the homepage or send an error report.
         </div>
         <a href="/" class="bullshit__return-home">Back to home</a>
       </div>
@@ -40,15 +35,15 @@ export default {
   },
   computed: {
     message() {
-      return 'The bodyguard said that you can\'t enter this page...';
+      return "The bodyguard said that you can't enter this page...";
     },
   },
 };
 </script>
 
 <style rel="stylesheet/scss" lang="scss" scoped>
-.wscn-http404-container{
-  transform: translate(-50%,-50%);
+.wscn-http404-container {
+  transform: translate(-50%, -50%);
   position: absolute;
   top: 40%;
   left: 50%;

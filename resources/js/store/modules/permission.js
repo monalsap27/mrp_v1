@@ -1,4 +1,9 @@
-import { asyncRoutes, constantRoutes, asyncRoutesProduction } from '@/router';
+import {
+  asyncRoutes,
+  constantRoutes,
+  asyncRoutesProduction,
+  // asyncRoutesAdmin,
+} from '@/router';
 
 /**
  * Check if it matches the current user right by meta.role
@@ -67,13 +72,18 @@ const mutations = {
 
 const actions = {
   generateRoutes({ commit }, { routes, roles, permissions }) {
-    console.log(window.location.href);
-
+    // var pathUrl = window.location.hash;
+    console.log(window.location);
     return new Promise((resolve) => {
       let accessedRoutes;
-      if (roles.includes('admin')) {
-        console.log(routes);
+      if (!roles.includes('visitor')) {
+        // if (pathUrl === '#/production') {
         accessedRoutes = asyncRoutesProduction || [];
+        // } else if (pathUrl === '#/administrator') {
+        // accessedRoutes = asyncRoutesAdmin || [];
+        // } else {
+        //   accessedRoutes = routes || [];
+        // }
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, permissions);
       }

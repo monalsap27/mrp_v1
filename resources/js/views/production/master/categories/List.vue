@@ -68,22 +68,33 @@
 
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button
-            type="warning"
-            size="small"
-            icon="el-icon-edit"
-            @click="handleEditCategories(scope.row.id)"
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Edit"
+            placement="top-start"
           >
-            Edit
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.name)"
+            <el-button
+              type="warning"
+              size="small"
+              icon="el-icon-edit"
+              @click="handleEditCategories(scope.row.id)"
+            />
+          </el-tooltip>
+
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Delete"
+            placement="top-start"
           >
-            Delete
-          </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row.id, scope.row.name)"
+            />
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -190,7 +201,7 @@ import {
   fetchList,
   createOrUpdateCategories,
   DeleteCategories,
-} from '@/api/product/master/categories';
+} from '@/api/production/master/categories';
 
 export default {
   name: 'CategoriesList',
@@ -353,7 +364,7 @@ export default {
 
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete user ' + name + '. Continue?',
+        'This will permanently delete Category ' + name + '. Continue?',
         'Warning',
         {
           confirmButtonText: 'OK',

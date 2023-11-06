@@ -1,8 +1,6 @@
 <template>
   <div :class="{ 'has-logo': showLogo }">
-    <!-- <h1>coba</h1> -->
     <logo v-if="showLogo" :collapse="isCollapse" />
-    <!-- <h1>HALO</h1> -->
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :show-timeout="200"
@@ -40,7 +38,6 @@ export default {
       return this.$store.state.settings.sidebarLogo;
     },
     variables() {
-      console.log(variables);
       return variables;
     },
     isCollapse() {

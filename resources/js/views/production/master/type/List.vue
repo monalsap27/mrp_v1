@@ -68,22 +68,33 @@
 
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button
-            type="warning"
-            size="small"
-            icon="el-icon-edit"
-            @click="handleEditType(scope.row.id)"
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Edit"
+            placement="top-start"
           >
-            Edit
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.name)"
+            <el-button
+              type="warning"
+              size="small"
+              icon="el-icon-edit"
+              @click="handleEditType(scope.row.id)"
+            />
+          </el-tooltip>
+
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Delete"
+            placement="top-start"
           >
-            Delete
-          </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row.id, scope.row.name)"
+            />
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -94,6 +105,7 @@
       :limit.sync="query.limit"
       @pagination="getList"
     />
+
     <el-dialog
       :title="'Create new type'"
       :visible.sync="dialogFormVisible"
@@ -109,16 +121,10 @@
           style="max-width: 100%"
         >
           <el-form-item :label="$t('Name')" prop="name">
-            <el-input
-              v-model="newType.name"
-              placeholder="type name here"
-            />
+            <el-input v-model="newType.name" placeholder="type name here" />
           </el-form-item>
           <el-form-item :label="$t('Code')" prop="code">
-            <el-input
-              v-model="newType.code"
-              placeholder="type code here"
-            />
+            <el-input v-model="newType.code" placeholder="type code here" />
           </el-form-item>
           <el-form-item :label="$t('Description')" prop="description">
             <el-input
@@ -153,16 +159,10 @@
           style="max-width: 100%"
         >
           <el-form-item :label="$t('Name')" prop="name">
-            <el-input
-              v-model="currentType.name"
-              placeholder="type name here"
-            />
+            <el-input v-model="currentType.name" placeholder="type name here" />
           </el-form-item>
           <el-form-item :label="$t('Code')" prop="code">
-            <el-input
-              v-model="currentType.code"
-              placeholder="type code here"
-            />
+            <el-input v-model="currentType.code" placeholder="type code here" />
           </el-form-item>
           <el-form-item :label="$t('Description')" prop="description">
             <el-input
@@ -190,7 +190,7 @@ import {
   fetchList,
   createOrUpdateType,
   DeleteType,
-} from '@/api/product/master/type';
+} from '@/api/production/master/type';
 
 export default {
   name: 'TypeList',
@@ -316,9 +316,7 @@ export default {
       this.currentId = id;
       this.typeEdit = true;
       this.dialogEditVisible = true;
-      const foundType = this.list.find(
-        (type) => type.id === id
-      );
+      const foundType = this.list.find((type) => type.id === id);
       this.currentType = {
         id: foundType.id,
         name: foundType.name,
@@ -353,7 +351,7 @@ export default {
 
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete user ' + name + '. Continue?',
+        'This will permanently delete Type ' + name + '. Continue?',
         'Warning',
         {
           confirmButtonText: 'OK',

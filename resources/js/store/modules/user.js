@@ -44,11 +44,11 @@ const actions = {
     const { email, password } = userInfo;
     return new Promise((resolve, reject) => {
       login({ email: email.trim(), password: password })
-        .then(response => {
+        .then((response) => {
           setLogged('1');
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           reject(error);
         });
@@ -59,7 +59,7 @@ const actions = {
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getInfo()
-        .then(response => {
+        .then((response) => {
           const { data } = response;
 
           if (!data) {
@@ -80,7 +80,7 @@ const actions = {
           commit('SET_ID', id);
           resolve(data);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -97,7 +97,7 @@ const actions = {
           resetRouter();
           resolve();
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -105,7 +105,7 @@ const actions = {
 
   // remove token
   resetToken({ commit }) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       commit('SET_TOKEN', '');
       commit('SET_ROLES', []);
       removeToken();
@@ -115,7 +115,7 @@ const actions = {
 
   // Dynamically modify permissions
   changeRoles({ commit, dispatch }, role) {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       // const token = role + '-token';
 
       // commit('SET_TOKEN', token);
@@ -124,13 +124,16 @@ const actions = {
       // const { roles } = await dispatch('getInfo');
 
       const roles = [role.name];
-      const permissions = role.permissions.map(permission => permission.name);
+      const permissions = role.permissions.map((permission) => permission.name);
       commit('SET_ROLES', roles);
       commit('SET_PERMISSIONS', permissions);
       resetRouter();
 
       // generate accessible routes map based on roles
-      const accessRoutes = store.dispatch('permission/generateRoutes', { roles, permissions });
+      const accessRoutes = store.dispatch('permission/generateRoutes', {
+        roles,
+        permissions,
+      });
 
       // dynamically add accessible routes
       router.addRoutes(accessRoutes);

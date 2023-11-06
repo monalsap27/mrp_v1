@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File Acl.php
  *
@@ -6,6 +7,7 @@
  * @package Laravue
  * @version 1.0
  */
+
 namespace App\Laravue;
 
 use Illuminate\Support\Arr;
@@ -37,6 +39,10 @@ final class Acl
     const PERMISSION_VIEW_MENU_ZIP = 'view menu zip';
     const PERMISSION_VIEW_MENU_PDF = 'view menu pdf';
     const PERMISSION_VIEW_MENU_I18N = 'view menu i18n';
+    const PERMISSION_VIEW_MENU_MASTER_PRODUCT = 'view menu master product';
+    const PERMISSION_VIEW_MENU_PRODUCT = 'view menu product';
+    const PERMISSION_VIEW_MENU_APPROVAL_PRODUCT = 'view menu approval product';
+
 
     const PERMISSION_USER_MANAGE = 'manage user';
     const PERMISSION_ARTICLE_MANAGE = 'manage article';
@@ -52,7 +58,7 @@ final class Acl
         try {
             $class = new \ReflectionClass(__CLASS__);
             $constants = $class->getConstants();
-            $permissions = Arr::where($constants, function($value, $key) use ($exclusives) {
+            $permissions = Arr::where($constants, function ($value, $key) use ($exclusives) {
                 return !in_array($value, $exclusives) && Str::startsWith($key, 'PERMISSION_');
             });
 
@@ -67,7 +73,7 @@ final class Acl
         try {
             $class = new \ReflectionClass(__CLASS__);
             $constants = $class->getConstants();
-            $permissions = Arr::where($constants, function($value, $key) {
+            $permissions = Arr::where($constants, function ($value, $key) {
                 return Str::startsWith($key, 'PERMISSION_VIEW_MENU_');
             });
 
@@ -85,7 +91,7 @@ final class Acl
         try {
             $class = new \ReflectionClass(__CLASS__);
             $constants = $class->getConstants();
-            $roles =  Arr::where($constants, function($value, $key) {
+            $roles =  Arr::where($constants, function ($value, $key) {
                 return Str::startsWith($key, 'ROLE_');
             });
 

@@ -68,22 +68,33 @@
 
       <el-table-column align="center" label="Actions" width="200">
         <template slot-scope="scope">
-          <el-button
-            type="warning"
-            size="small"
-            icon="el-icon-edit"
-            @click="handleEditUnit(scope.row.id)"
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Edit"
+            placement="top-start"
           >
-            Edit
-          </el-button>
-          <el-button
-            type="danger"
-            size="small"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row.id, scope.row.name)"
+            <el-button
+              type="warning"
+              size="small"
+              icon="el-icon-edit"
+              @click="handleEditUnit(scope.row.id)"
+            />
+          </el-tooltip>
+
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="Delete"
+            placement="top-start"
           >
-            Delete
-          </el-button>
+            <el-button
+              type="danger"
+              size="small"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row.id, scope.row.name)"
+            />
+          </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
@@ -109,16 +120,10 @@
           style="max-width: 100%"
         >
           <el-form-item :label="$t('Name')" prop="name">
-            <el-input
-              v-model="newUnit.name"
-              placeholder="type name here"
-            />
+            <el-input v-model="newUnit.name" placeholder="type name here" />
           </el-form-item>
           <el-form-item :label="$t('Code')" prop="code">
-            <el-input
-              v-model="newUnit.code"
-              placeholder="type code here"
-            />
+            <el-input v-model="newUnit.code" placeholder="type code here" />
           </el-form-item>
           <el-form-item :label="$t('Description')" prop="description">
             <el-input
@@ -153,16 +158,10 @@
           style="max-width: 100%"
         >
           <el-form-item :label="$t('Name')" prop="name">
-            <el-input
-              v-model="currentUnit.name"
-              placeholder="type name here"
-            />
+            <el-input v-model="currentUnit.name" placeholder="type name here" />
           </el-form-item>
           <el-form-item :label="$t('Code')" prop="code">
-            <el-input
-              v-model="currentUnit.code"
-              placeholder="type code here"
-            />
+            <el-input v-model="currentUnit.code" placeholder="type code here" />
           </el-form-item>
           <el-form-item :label="$t('Description')" prop="description">
             <el-input
@@ -190,7 +189,7 @@ import {
   fetchList,
   createOrUpdateUnit,
   DeleteUnit,
-} from '@/api/product/master/unit';
+} from '@/api/production/master/unit';
 
 export default {
   name: 'UnitList',
@@ -316,9 +315,7 @@ export default {
       this.currentId = id;
       this.unitEdit = true;
       this.dialogEditVisible = true;
-      const foundUnit = this.list.find(
-        (unit) => unit.id === id
-      );
+      const foundUnit = this.list.find((unit) => unit.id === id);
       this.currentUnit = {
         id: foundUnit.id,
         name: foundUnit.name,
@@ -353,7 +350,7 @@ export default {
 
     handleDelete(id, name) {
       this.$confirm(
-        'This will permanently delete user ' + name + '. Continue?',
+        'This will permanently delete Unit ' + name + '. Continue?',
         'Warning',
         {
           confirmButtonText: 'OK',

@@ -149,4 +149,4 @@ Route::get('articles/{id}/pageviews', function ($id) {
 });
 
 
-require __DIR__ . '/product.php';
+require __DIR__ . '/production.php';

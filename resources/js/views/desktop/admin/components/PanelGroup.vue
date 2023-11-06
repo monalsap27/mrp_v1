@@ -11,13 +11,12 @@
       <!-- <img src="../../../../assets/login/favicon.png" width="20%" style="border-radius: 1rem;" alt=""> -->
     </h1>
     <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-      <div class="card-panel" @click="logout">
+      <div class="card-panel" @click="admin">
         <div class="card-panel-icon-wrapper icon-people">
           <svg-icon icon-class="peoples" class-name="card-panel-icon" />
         </div>
         <div class="card-panel-description">
-          <div class="card-panel-text">Sales</div>
-          <!-- <count-to :start-val="0" :end-val="102400" :duration="2600" class="card-panel-num" /> -->
+          <div class="card-panel-text">Admin</div>
         </div>
       </div>
     </el-col>
@@ -28,7 +27,6 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Production</div>
-          <!-- <count-to :start-val="0" :end-val="81212" :duration="3000" class="card-panel-num" /> -->
         </div>
       </div>
     </el-col>
@@ -39,7 +37,6 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Purchasing</div>
-          <!-- <count-to :start-val="0" :end-val="9280" :duration="3200" class="card-panel-num" /> -->
         </div>
       </div>
     </el-col>
@@ -50,7 +47,6 @@
         </div>
         <div class="card-panel-description">
           <div class="card-panel-text">Vendor</div>
-          <!-- <count-to :start-val="0" :end-val="13600" :duration="3600" class="card-panel-num" /> -->
         </div>
       </div>
     </el-col>
@@ -69,9 +65,13 @@ export default {
     },
 
     async production() {
-      this.$router.push(`/production`, {
-        name: 'production.index',
-        params: { module: 'production' },
+      this.$router.push({ path: '/production' }).then(() => {
+        this.$router.go();
+      });
+    },
+    async admin() {
+      this.$router.push({ path: '/administrator' }).then(() => {
+        this.$router.go();
       });
     },
 

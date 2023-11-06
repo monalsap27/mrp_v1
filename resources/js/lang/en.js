@@ -72,6 +72,7 @@ export default {
     userProfile: 'User Profile',
     productMaster: 'Master',
     productionRoute: 'Production',
+    createProduct: 'Create Product',
   },
   navbar: {
     logOut: 'Log Out',

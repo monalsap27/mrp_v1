@@ -4,7 +4,7 @@ const productMaster = {
   path: '/production-master',
   component: Layout,
   redirect: '/production-master/categories',
-  name: 'Mater',
+  name: 'Master',
   meta: {
     title: 'Master',
     icon: 'component',
@@ -17,7 +17,7 @@ const productMaster = {
       name: 'CategoriesList',
       meta: {
         title: 'Categories',
-        icon: 'nested',
+        icon: '',
         permissions: ['manage master categories'],
       },
     },
@@ -27,7 +27,7 @@ const productMaster = {
       name: 'UnitList',
       meta: {
         title: 'Unit',
-        icon: 'el-icon-info',
+        icon: '',
         permissions: ['manage master unit'],
       },
     },
@@ -37,18 +37,18 @@ const productMaster = {
       name: 'TypeList',
       meta: {
         title: 'Type',
-        icon: 'el-icon-s-open',
+        icon: '',
         permissions: ['manage master type'],
       },
     },
     {
-      path: 'workstation',
-      component: () => import('@/views/production/master/workstation/List'),
-      name: 'WorkstationList',
+      path: 'supplier',
+      component: () => import('@/views/production/master/supplier/List'),
+      name: 'SupplierList',
       meta: {
-        title: 'Workstation',
-        icon: 'el-icon-question',
-        permissions: ['manage master workstation'],
+        title: 'Supplier',
+        icon: '',
+        permissions: ['manage master supplier'],
       },
     },
   ],
