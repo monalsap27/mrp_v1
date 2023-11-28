@@ -1,5 +1,22 @@
 <template>
   <div>
+    <div class="filter-container">
+      <el-input
+        v-model="query.keyword"
+        :placeholder="$t('table.keyword')"
+        style="width: 200px"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
+      <el-button
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >
+        {{ $t('table.search') }}
+      </el-button>
+    </div>
     <el-table
       v-loading="loadingProduct"
       :data="list"
@@ -9,13 +26,7 @@
       style="width: 120%"
       :default-sort="{ prop: 'date', order: 'descending' }"
     >
-      <el-table-column
-        sortable
-        align="center"
-        label="Name"
-        width="300"
-        prop="name"
-      />
+      <el-table-column sortable align="center" label="Name" prop="name" />
 
       <el-table-column width="200" prop="code" label="Code" align="center" />
 
@@ -53,15 +64,8 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column fixed="right" class-name="status-col" width="200">
-        <template #header>
-          <el-input
-            v-model="query.keyword"
-            size="mini"
-            placeholder="Type to search"
-          />
-        </template>
-
+      label="Cost"
+      <el-table-column class-name="status-col" width="200" label="Action">
         <template #default="scope">
           <span v-if="scope.row.status == 1">
             <router-link :to="'/production-product/edit/' + scope.row.id">
@@ -74,6 +78,13 @@
               @click="handleDelete(scope.row.id, scope.row.name)"
             />
           </span>
+          <router-link
+            :to="'/production-product/detailProduct/' + scope.row.id"
+          >
+            <el-button type="primary" size="small">
+              <svg-icon icon-class="eye-melek" />
+            </el-button>
+          </router-link>
         </template>
       </el-table-column>
     </el-table>

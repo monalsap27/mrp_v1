@@ -159,7 +159,7 @@ export default {
             .then((response) => {
               this.$message({
                 type: 'success',
-                message: 'Delete completed',
+                message: name + response.message,
               });
               this.handleFilter();
             })

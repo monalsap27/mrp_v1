@@ -56,9 +56,43 @@ const productionProduct = {
     {
       path: 'detailApproval/:id(\\d+)',
       component: () => import('@/views/production/product/DetailApproval'),
-      name: 'Edit Workstation',
+      name: 'Detail Approval',
       meta: {
-        title: 'Edit Workstation',
+        title: 'Detail Approval',
+        noCache: true,
+        icon: 'edit',
+        permissions: ['view menu approval product'],
+      },
+      hidden: true,
+    },
+    {
+      path: 'detailProduct/:id(\\d+)',
+      component: () => import('@/views/production/product/DetailProduct'),
+      name: 'Detail Approval',
+      meta: {
+        title: 'Detail Approval',
+        noCache: true,
+        icon: 'edit',
+        permissions: ['view menu approval product'],
+      },
+      hidden: true,
+    },
+    {
+      path: 'stock',
+      component: () => import('@/views/production/product/ListStock'),
+      name: 'Stock',
+      meta: {
+        title: 'Stock',
+        icon: 'box-open-full',
+        permissions: ['view menu product'],
+      },
+    },
+    {
+      path: 'mutasiStock/:id(\\d+)',
+      component: () => import('@/views/production/product/ListMutasiStock'),
+      name: 'Mutasi Stock',
+      meta: {
+        title: 'Mutasi Stock',
         noCache: true,
         icon: 'edit',
         permissions: ['view menu approval product'],

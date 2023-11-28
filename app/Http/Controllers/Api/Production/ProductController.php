@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api\Production;
 
-use Auth;
 use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
@@ -21,14 +20,13 @@ class ProductController extends Controller
         $productQuery = Product::query()
             ->leftJoin("product.m_category as b", "product.m_category_id", "b.id")
             ->leftJoin("product.m_unit as c", "product.m_unit_id", "c.id")
-            ->select('product.id', 'product.name', 'product.code', 'sales_price', 'b.name as category_name', 'sales_price', 'unit_cost', 'product.status', 'c.name as unit_name');
+            ->select('product.id', 'product.name', 'product.code', 'sales_price', 'b.name as category_name', 'sales_price', 'unit_cost', 'product.status', 'c.name as unit_name', 'safety_stock');
         $sort = Arr::get($searchParams, 'sort', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         $productQuery->where('product.type', $searchParams['type']);
         if (!empty($keyword)) {
             $productQuery->where('product.name', 'LIKE', '%' . $keyword . '%');
-            $productQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
             $productQuery->orWhere('product.code', 'LIKE', '%' . $keyword . '%');
         }
         if ($sort == '-id') {
@@ -44,12 +42,13 @@ class ProductController extends Controller
         $productQuery = Product::query()
             ->leftJoin("product.m_category as b", "product.m_category_id", "b.id")
             ->leftJoin("product.m_unit as c", "product.m_unit_id", "c.id")
-            ->where("product.status", '1')
-            ->select('product.id', 'product.name', 'product.code', 'sales_price', 'b.name as category_name', 'sales_price', 'unit_cost', 'product.status', 'c.name as unit_name');
+            ->select('product.id', 'product.name', 'product.code', 'sales_price', 'b.name as category_name', 'sales_price', 'unit_cost', 'product.status', 'c.name as unit_name')
+            ->where('type', '1')
+            ->orderBy('product.status', 'asc')
+            ->orderBy('product.created_at', 'desc');
         $sort = Arr::get($searchParams, 'sort', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
-        $productQuery->where('product.type', $searchParams['type']);
         if (!empty($keyword)) {
             $productQuery->where('product.name', 'LIKE', '%' . $keyword . '%');
             $productQuery->orWhere('description', 'LIKE', '%' . $keyword . '%');
@@ -90,23 +89,22 @@ class ProductController extends Controller
                 $product = new Product();
                 $product->name = $params['name'];
                 $product->code = $params['code'];
-                $product->unit_cost = $params['unit_cost'];
+                $product->unit_cost = empty($params['unit_cost']) ? null : $params['unit_cost'];
                 $product->length = $params['length'];
                 $product->width = $params['width'];
                 $product->height = $params['height'];
                 $product->m_unit_id = $params['unit'];
-                $product->m_supplier_id = $params['supplier'];
+                $product->m_supplier_id = !empty($params['supplier']) ? $params['supplier'] : '0';
                 $product->type = $params['type'];
                 $product->m_category_id = $params['categories'];
                 $product->weight = $params['weight'];
                 $product->total_workforce = $params['total_workforce'];
                 $product->total_timing = $params['total_timing'];
-                $product->created_by = Auth::user()->id;
                 if ($params['type'] == 1) {
-                    $product->status = '0';
+                    $product->status = '1';
                     $product->save();
-
-                    $jml_detail                 = count($request->items);
+                    $jml_detail = count($request->items);
+                    $index      = 1;
                     for ($x = 0; $x < $jml_detail; $x++) {
                         $product_detail         = new ProductDetail();
                         $product_detail->data_product()->associate($product);
@@ -114,28 +112,32 @@ class ProductController extends Controller
                         $product_detail->timming = $request->items[$x]['timing'];
                         $product_detail->qty = $request->items[$x]['qty'];
                         $product_detail->material_id = $request->items[$x]['material_id'];
+                        $product_detail->index = $index;
                         $product_detail->save();
+                        $index++;
                     }
                 }
                 $product->save();
+                DB::commit();
+                return response()->json(['message' => 'has been created successfully !'], 200);
             } else {
                 $product = Product::find($params['id']);
                 $product->name = $params['name'];
                 $product->code = $params['code'];
-                $product->unit_cost = $params['unit_cost'];
+                $product->unit_cost = empty($params['unit_cost']) ? null : $params['unit_cost'];
                 $product->length = $params['length'];
                 $product->width = $params['width'];
                 $product->height = $params['height'];
                 $product->m_unit_id = $params['unit'];
-                $product->m_supplier_id = $params['supplier'];
+                $product->m_supplier_id = !empty($params['supplier']) ? $params['supplier'] : '0';
                 $product->type = $params['type'];
                 $product->m_category_id = $params['categories'];
                 $product->weight = $params['weight'];
-                $product->total_workforce = $params['total_workforce'];
-                $product->total_timing = $params['total_timing'];
-                $product->updated_by = Auth::user()->id;
+                $product->total_workforce = $params['type'] == 1 ? $params['total_workforce'] : 0;
+                $product->total_timing = $params['type'] == 1 ? $params['total_timing'] : 0;
                 if ($product->save()) {
-                    $jml_detail      = count($request->items);
+                    $jml_detail = count($request->items);
+                    $index      = 1;
                     for ($x = 0; $x < $jml_detail; $x++) {
                         if (empty($request->items[$x]['id'])) {
                             $product_detail = new ProductDetail();
@@ -143,6 +145,7 @@ class ProductController extends Controller
                             $product_detail->workstation_id = is_array($request->items[$x]['workstation_id']) ? $request->items[$x]['workstation_id']['id'] : $request->items[$x]['workstation_id'];
                             $product_detail->timming = $request->items[$x]['timing'];
                             $product_detail->qty = $request->items[$x]['qty'];
+                            $product_detail->index = $index;
                             $product_detail->material_id = $request->items[$x]['material_id'];
                             $product_detail->save();
                         } else {
@@ -151,43 +154,41 @@ class ProductController extends Controller
                             $product_detail->workstation_id = $request->items[$x]['workstation_id'];
                             $product_detail->timming = $request->items[$x]['timing'];
                             $product_detail->qty = $request->items[$x]['qty'];
+                            $product_detail->index = $index;
                             $product_detail->material_id = $request->items[$x]['material_id'];
                             $product_detail->save();
                         }
                     }
+                    $index++;
                 }
+                DB::commit();
+                return response()->json(['message' => 'has been updated successfully !'], 200);
             }
-            DB::commit();
-            return response()->json([
-                'error'    => 0,
-                'message' => 'Data Berhasil Disimpan !'
-            ]);
         } catch (\Exception $e) {
             DB::rollback();
             return $e->getMessage();
         }
     }
-    public function destroy(Request $request)
+    public function approve(Request $request)
     {
         try {
             $product = Product::find($request->id);
-            $product->deleted_by = Auth::user()->id;
-            $product->deleted_at = new DateTime();
+            $product->status = $request->status;
+            $product->note = $request->status == 2 ? '' : $request->note;
+            $product->approved_by = auth()->user()->id;
+            $product->approved_at = new DateTime();
             $product->save();
-
-            ProductDetail::where('product_id', $request->id)
-                ->update(['deleted_at' => new DateTime()]);
         } catch (\Exception $ex) {
             DB::rollBack();
             return response()->json(['error' => $ex->getMessage()], 403);
         }
-        return response()->json(null, 204);
+        return response()->json(200);
     }
     public function show(Request $request)
     {
-        $product      = Product::where('id', $request->id)
+        $product = Product::where('id', $request->id)
             ->with('categories', 'unit', 'supplier')
-            ->select('product.id', 'product.name', 'product.description', 'product.code', 'product.total_workforce', 'product.length', 'product.height', 'product.width', 'product.weight', 'product.weight', 'product.unit_cost', 'product.unit_cost', 'm_category_id', 'type', 'variant', 'm_supplier_id', 'm_unit_id', 'total_workforce', 'total_timing')
+            ->select('product.id', 'product.name', 'product.description', 'product.code', 'product.total_workforce', 'product.length', 'product.height', 'product.width', 'product.weight', 'product.weight', 'product.unit_cost', 'product.unit_cost', 'm_category_id', 'type', 'variant', 'm_supplier_id', 'm_unit_id', 'total_workforce', 'total_timing', 'product.status', 'product.note')
             ->first();
         $arr_product  =  [
             'id' => $product->id,
@@ -200,15 +201,18 @@ class ProductController extends Controller
             'width' => $product->width,
             'weight' => $product->weight,
             'unit_cost' => $product->unit_cost,
-            'type' => $product->type = 1 ? 'I make this product' : 'I buy this product',
+            'type' => $product->type,
+            'type_name' => $product->type = 1 ? 'I make this product' : 'I buy this product',
             'm_category_id' => $product->m_category_id,
             'm_unit_id' => $product->m_unit_id,
             'm_supplier_id' => $product->m_supplier_id,
-            'total_workforce' => $product->total_workforce,
+            'total_workforce' => $product->total_workforce,\
             'total_timing' => $product->total_timing,
             'category_name' => $product['categories']->name,
             'unit_name' => $product['unit']->name,
             'supplier_name' => $product['supplier']->name,
+            'status'    => $product->status,
+            'note'      => $product->note,
             'total_timing' => WorkstationController::hour($product->total_timing),
         ];
         return new GeneralCollection($arr_product);
@@ -235,5 +239,42 @@ class ProductController extends Controller
             );
         }
         return new GeneralCollection($arr_detail);
+    }
+    public function destroy(Request $request)
+    {
+        try {
+            $product = Product::findOrFail($request->id);
+            $product->deleted_by = auth()->user()->id;
+            $product->save();
+            $product->delete();
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage()], 403);
+        }
+        return response()->json(["message" => " has been deleted successfully"], 200);
+    }
+    public function dataShowBillOf(Request $request)
+    {
+        $searchParams = $request->all();
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        $data_bill = ProductDetail::query()
+            ->select("c.name", "c.code", DB::RAW("sum(qty) as qty"))
+            ->where('product_detail.product_id', $searchParams['id'])
+            ->leftJoin('product.product as c', 'product_detail.material_id', 'c.id')
+            ->groupBy("c.name", "c.code")
+            ->orderBy("c.name", "asc");
+        return new GeneralCollection($data_bill->paginate($limit));
+    }
+    public function updateSafetyStock(Request $request)
+    {
+        try {
+            $product = Product::find($request->product_id);
+            $product->safety_stock = $request->safety_stock;
+            $product->save();
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage()], 403);
+        }
+        return response()->json(200);
     }
 }

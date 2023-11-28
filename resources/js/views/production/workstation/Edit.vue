@@ -3,11 +3,10 @@
 </template>
 
 <script>
-import FormWorkstation from './components/FormWorkstation';
+import formWorkstation from './components/formWorkstation';
 
 export default {
   name: 'EditForm',
-
-  components: { FormWorkstation },
+  components: { formWorkstation },
 };
 </script>

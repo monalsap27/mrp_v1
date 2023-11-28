@@ -2,7 +2,9 @@
   <div class="createPost-container">
     <el-form
       ref="postForm"
-      v-loading="loadingForm"
+      v-loading.fullscreen.lock="loadingEdit"
+      element-loading-background="rgba(122, 122, 122, 0.8)"
+      element-loading-text="Loading..."
       :model="newWorkstation"
       :rules="rules"
       class="form-container"
@@ -139,6 +141,24 @@
                     />
                   </el-form-item>
                 </el-col>
+                <el-col :span="12">
+                  <el-form-item
+                    prop="description"
+                    label-width="130px"
+                    label="Change Material :"
+                    class="postInfo-container-item"
+                    style="width: 80%"
+                  >
+                    <el-switch
+                      v-model="newWorkstation.change_material"
+                      style="display: block; margin-top: 3px"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-text="Yes"
+                      inactive-text="No"
+                    />
+                  </el-form-item>
+                </el-col>
               </el-row>
             </div>
           </el-col>
@@ -266,6 +286,7 @@ export default {
       postForm: Object.assign({}, defaultForm),
       loading: false,
       loadingForm: false,
+      loadingEdit: false,
       userListOptions: [],
       workforce: [],
       productOptions: [],
@@ -313,7 +334,7 @@ export default {
       });
     },
     fetchData(id) {
-      this.loadingForm = true;
+      this.loadingEdit = true;
       fetchWorkstation(id)
         .then((response) => {
           this.newWorkstation = {
@@ -323,6 +344,7 @@ export default {
             description: response.data.description,
             timing: response.data.timing,
             workforce: response.data.workforce,
+            change_material: response.data.change_material,
             items: [],
           };
         })
@@ -338,6 +360,7 @@ export default {
               id: element.id,
             });
           });
+          this.loadingEdit = false;
         })
         .catch((err) => {
           console.log(err);

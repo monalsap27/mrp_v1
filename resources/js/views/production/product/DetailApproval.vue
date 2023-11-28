@@ -1,12 +1,12 @@
 <template>
-  <detail-product :is-approve="true" />
+  <partial-detail-product :is-approve="true" />
 </template>
 
 <script>
-import detailProduct from './components/detailProduct';
+import PartialDetailProduct from './components/PartialDetailProduct';
 
 export default {
-  name: 'DetailProduct',
-  components: { detailProduct },
+  name: 'ApprovalForm',
+  components: { PartialDetailProduct },
 };
 </script>

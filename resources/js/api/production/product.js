@@ -7,7 +7,6 @@ export function fetchList(query) {
     params: query,
   });
 }
-
 export function fetchListApproval(query) {
   return request({
     url: '/production/product/dataApproval',
@@ -15,7 +14,6 @@ export function fetchListApproval(query) {
     params: query,
   });
 }
-
 export function comboData(query) {
   return request({
     url: '/production/product/comboData',
@@ -23,7 +21,6 @@ export function comboData(query) {
     params: query,
   });
 }
-
 export function createProduct(data) {
   return request({
     url: '/production/product/store',
@@ -31,7 +28,6 @@ export function createProduct(data) {
     data,
   });
 }
-
 export function DeleteCategories(id) {
   return request({
     url: '/production/product/delete',
@@ -41,7 +37,6 @@ export function DeleteCategories(id) {
     },
   });
 }
-
 export function ShowProduct(id) {
   return request({
     url: '/production/product/show',
@@ -51,7 +46,6 @@ export function ShowProduct(id) {
     },
   });
 }
-
 export function ShowProductDetail(id) {
   return request({
     url: '/production/product/showDetail',
@@ -61,7 +55,6 @@ export function ShowProductDetail(id) {
     },
   });
 }
-
 export function DeleteProduct(id) {
   return request({
     url: '/production/product/delete',
@@ -69,5 +62,36 @@ export function DeleteProduct(id) {
     data: {
       id: id,
     },
+  });
+}
+export function ApproveProduct(id) {
+  return request({
+    url: '/production/product/approve',
+    method: 'post',
+    data: {
+      id: id,
+      status: 2,
+    },
+  });
+}
+export function RejectProduct(data) {
+  return request({
+    url: '/production/product/approve',
+    method: 'post',
+    data,
+  });
+}
+export function dataShowBillOf(query) {
+  return request({
+    url: '/production/product/dataShowBillOf',
+    method: 'get',
+    params: query,
+  });
+}
+export function updateSafetyStock(data) {
+  return request({
+    url: '/production/product/updateSafetyStock',
+    method: 'post',
+    data,
   });
 }

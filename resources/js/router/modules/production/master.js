@@ -17,7 +17,7 @@ const productMaster = {
       name: 'CategoriesList',
       meta: {
         title: 'Categories',
-        icon: '',
+        icon: 'apps-add',
         permissions: ['manage master categories'],
       },
     },
@@ -27,7 +27,7 @@ const productMaster = {
       name: 'UnitList',
       meta: {
         title: 'Unit',
-        icon: '',
+        icon: 'gauge-circle-bolt',
         permissions: ['manage master unit'],
       },
     },
@@ -37,7 +37,7 @@ const productMaster = {
       name: 'TypeList',
       meta: {
         title: 'Type',
-        icon: '',
+        icon: 'box',
         permissions: ['manage master type'],
       },
     },
@@ -47,7 +47,7 @@ const productMaster = {
       name: 'SupplierList',
       meta: {
         title: 'Supplier',
-        icon: '',
+        icon: '3m',
         permissions: ['manage master supplier'],
       },
     },

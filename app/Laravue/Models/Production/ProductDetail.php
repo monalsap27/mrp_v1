@@ -11,7 +11,7 @@ class ProductDetail extends Model
     use SoftDeletes;
     use HasFactory;
     protected $table = 'product.product_detail';
-    protected $fillable = ['timming', 'material_id', 'product_id', 'workstation_id', 'qty', 'created_at', 'updated_at', 'deleted_at'];
+    protected $fillable = ['product_id', 'qty', 'material_id', 'index', 'timming', 'date', 'status', 'approved_by', 'approved_at'];
 
     public function data_product()
     {

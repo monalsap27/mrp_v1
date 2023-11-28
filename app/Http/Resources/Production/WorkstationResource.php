@@ -16,6 +16,7 @@ class WorkstationResource extends JsonResource
             'timing' => $this->timing,
             'workforce' => $this->workforce,
             'total_workforce' => $this->total_workforce,
+            'change_material' => $this->change_material,
         ];
     }
 }

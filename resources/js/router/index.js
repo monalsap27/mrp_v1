@@ -19,8 +19,7 @@ import permissionRoutes from './modules/admin/permission';
 import productionDashboard from './modules/production/dashboard';
 import productionMaster from './modules/production/master';
 import productionProduct from './modules/production/product';
-import productionWorkstation from './modules/production/workstation';
-import pokemonPage from './modules/production/pokemon';
+import productionManagement from './modules/production/productionManagement';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -112,8 +111,7 @@ export const asyncRoutesProduction = [
   productionDashboard,
   productionMaster,
   productionProduct,
-  productionWorkstation,
-  pokemonPage,
+  productionManagement,
 ];
 export const asyncRoutesAdmin = [adminRoutes, permissionRoutes];
 export const asyncRoutes = [{ path: '*', redirect: '/404', hidden: true }];

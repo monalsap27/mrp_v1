@@ -43,6 +43,7 @@ class WorkstationController extends Controller
             'description' => $workstation->description,
             'code' => $workstation->code,
             'total_workforce' => $workstation->total_workforce,
+            'change_material' => $workstation->change_material,
             'workforce' => (array)json_decode($workstation->workforce),
             'timing' => $this->hour($workstation->timing),
         ];
@@ -67,6 +68,7 @@ class WorkstationController extends Controller
                 $workstation->description     = $request->description;
                 $workstation->workforce       = json_encode($request->workforce, JSON_FORCE_OBJECT);
                 $workstation->total_workforce = count($request->workforce);
+                $workstation->change_material = empty($request->change_material) ? 'f' : $request->change_material;
                 $workstation->created_by      = Auth::user()->id;
                 $workstation->save();
                 $jml_detail                 = count($request->items);
@@ -85,6 +87,7 @@ class WorkstationController extends Controller
                 $workstation->description     = $request->description;
                 $workstation->workforce       = json_encode($request->workforce, JSON_FORCE_OBJECT);
                 $workstation->total_workforce = count($request->workforce);
+                $workstation->change_material = empty($request->change_material) ? 'f' : $request->change_material;
                 $workstation->created_by      = Auth::user()->id;
                 $workstation->save();
                 WorkstationDetail::where('workstation_id', $request->id)->delete();
@@ -137,7 +140,9 @@ class WorkstationController extends Controller
         $get_workstation = Workstation::select('workstation.name as workstation_name', 'workstation.description', 'workstation.total_workforce', 'workstation.timing', 'c.name as material', 'b.qty', 'b.product_id as material_id', 'workstation.id as workstation_id')
             ->leftJoin('product.workstation_detail as b', 'workstation.id', 'b.workstation_id')
             ->leftJoin('product.product as c', 'b.product_id', 'c.id')
-            ->whereIn('workstation.id', ((array) json_decode($get_data_group->arr_workstation_id)))->get();
+            ->whereIn('workstation.id', ((array) json_decode($get_data_group->arr_workstation_id)))
+            ->orderBy('workstation.id', 'asc')
+            ->get();
         return new GeneralCollection($get_workstation);
     }
     public function minutes($time)

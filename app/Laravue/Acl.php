@@ -42,6 +42,9 @@ final class Acl
     const PERMISSION_VIEW_MENU_MASTER_PRODUCT = 'view menu master product';
     const PERMISSION_VIEW_MENU_PRODUCT = 'view menu product';
     const PERMISSION_VIEW_MENU_APPROVAL_PRODUCT = 'view menu approval product';
+    const PERMISSION_VIEW_MENU_MANUFACTURING = 'view menu manufaturing';
+    const PERMISSION_VIEW_MENU_APPROVAL_MANUFACTURING = 'view menu approval manufaturing';
+
 
 
     const PERMISSION_USER_MANAGE = 'manage user';

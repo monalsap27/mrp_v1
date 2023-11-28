@@ -314,6 +314,7 @@
                     v-model="scope.row.timing"
                     class="edit-input"
                     size="small"
+                    @change="handleChangeTiming"
                   />
                 </template>
                 <span v-else style="margin-left: 10px">
@@ -501,16 +502,20 @@ export default {
       }
     },
     onGetWorkstation(row, data) {
-      if (this.unique.find((x) => x.workstation_id === data.id) === undefined) {
-        this.newProduct.total_workforce =
-          parseInt(this.newProduct.total_workforce) +
-          parseInt(data.total_workforce);
-        this.newProduct.total_timing =
-          parseInt(this.newProduct.total_timing) + parseInt(data.timing);
+      if (this.unique != null) {
+        if (
+          this.unique.find((x) => x.workstation_id === data.id) === undefined
+        ) {
+          this.newProduct.total_workforce =
+            parseInt(this.newProduct.total_workforce) +
+            parseInt(data.total_workforce);
+          this.newProduct.total_timing =
+            parseInt(this.newProduct.total_timing) + parseInt(data.timing);
+        }
+        row.timing = data.timing;
+        row.description = data.description;
+        row.total_workforce = data.total_workforce;
       }
-      row.timing = data.timing;
-      row.description = data.description;
-      row.total_workforce = data.total_workforce;
     },
     handleEdit(index, row) {
       row.edit = true;
@@ -532,6 +537,7 @@ export default {
         material_id: '',
         workstation_id: '',
       });
+      this.unique = this.newProduct.items;
     },
 
     async onShowWorkstation(event) {
@@ -571,12 +577,12 @@ export default {
         .then((response) => {
           this.newProduct = {
             id: response.data.id,
-            name: response.data.name,
+            name: response.data.product_name,
             code: response.data.code,
             description: response.data.description,
             categories: response.data.m_category_id,
             unit: response.data.m_unit_id,
-            length: response.data.length,
+            length: response.data.length_product,
             height: response.data.height,
             weight: response.data.weight,
             width: response.data.width,
@@ -638,7 +644,12 @@ export default {
         items: [],
       };
     },
-
+    handleChangeTiming(oldValue, currentValue) {
+      this.newProduct.total_timing = parseInt(
+        this.newProduct.total_timing +
+          (parseInt(oldValue) - parseInt(currentValue))
+      );
+    },
     saveProduct() {
       this.$refs['postForm'].validate((valid) => {
         if (valid) {
@@ -647,10 +658,7 @@ export default {
           createProduct(this.newProduct)
             .then((response) => {
               this.$message({
-                message:
-                  'New product ' +
-                  this.newProduct.name +
-                  ' has been created successfully.',
+                message: this.newProduct.name + response.message,
                 type: 'success',
                 duration: 5 * 1000,
               });

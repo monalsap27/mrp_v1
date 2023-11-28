@@ -36,7 +36,7 @@
             </el-tooltip>
           </span>
         </template>
-        <tab-product />
+        <partial-tab-product />
       </el-tab-pane>
       <el-tab-pane>
         <template #label>
@@ -46,19 +46,19 @@
             </el-tooltip>
           </span>
         </template>
-        <tab-material />
+        <partial-tab-material />
       </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 
 <script>
-import TabProduct from './components/TabProduct';
-import TabMaterial from './components/TabMaterial';
+import PartialTabProduct from './components/PartialTabProduct';
+import PartialTabMaterial from './components/PartialTabMaterial';
 
 export default {
   name: 'UnitList',
-  components: { TabProduct, TabMaterial },
+  components: { PartialTabProduct, PartialTabMaterial },
   filters: {
     statusFilter(status) {
       const statusMap = {

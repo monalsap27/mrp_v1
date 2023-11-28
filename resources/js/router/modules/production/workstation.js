@@ -1,7 +1,6 @@
-import Layout from '@/layout';
 const productionWorkstation = {
   path: '/production-workstation',
-  component: Layout,
+  component: () => import('@/views/production/workstation/index'), // Parent router-view
   redirect: 'workstation',
   meta: {
     title: 'Workstation',
@@ -33,7 +32,7 @@ const productionWorkstation = {
     },
     {
       path: 'edit/:id(\\d+)',
-      component: () => import('@/views/production/workstation/workstationEdit'),
+      component: () => import('@/views/production/workstation/Edit'),
       name: 'Edit Workstation',
       meta: {
         title: 'Edit Workstation',

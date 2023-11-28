@@ -301,6 +301,7 @@
                     v-model="scope.row.timing"
                     class="edit-input"
                     size="small"
+                    @change="handleChangeTiming(scope.row)"
                   />
                 </template>
                 <span v-else style="margin-left: 10px">
@@ -343,6 +344,7 @@
                     v-model="scope.row.qty"
                     class="edit-input"
                     size="small"
+                    @change="handleChangeQty"
                   />
                 </template>
                 <span v-else style="margin-left: 10px">
@@ -484,6 +486,12 @@ export default {
     handleDelete(index) {
       this.newProduct.items.splice(index, 1);
     },
+    handleChangeTiming(data){
+      console.log(data);
+    },
+    handleChangeQty(data){
+      console.log(data);
+    },
     addRow() {
       this.newProduct.items.push({
         workstation_name: '',
@@ -518,8 +526,6 @@ export default {
           workstation_id: element.workstation_id,
         });
       });
-      console.log(this.newProduct.items);
-
       this.listLoading = false;
     },
     resetNewForm() {

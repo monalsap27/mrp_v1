@@ -85,15 +85,18 @@
               <router-link
                 :to="'/production-product/detailApproval/' + scope.row.id"
               >
-                <el-button type="success">
-                  Confirmation
-                  <svg-icon
-                    icon-class="question-square"
-                    style="font-size: large"
-                  />
+                <el-button type="success" size="small">
+                  <svg-icon icon-class="question-square" />
                 </el-button>
               </router-link>
             </span>
+            <router-link
+              :to="'/production-product/detailProduct/' + scope.row.id"
+            >
+              <el-button type="primary" size="small">
+                <svg-icon icon-class="eye-melek" />
+              </el-button>
+            </router-link>
           </template>
         </el-table-column>
       </el-table>

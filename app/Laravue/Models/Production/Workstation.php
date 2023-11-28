@@ -11,7 +11,7 @@ class Workstation extends Model
     use SoftDeletes;
     use HasFactory;
     protected $table = 'product.workstation';
-    protected $fillable = ['name', 'description', 'code', 'timing', 'workforce', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['name', 'description', 'code', 'timing', 'workforce', 'change_material', 'created_at', 'updated_at', 'deleted_at', 'created_by', 'updated_by', 'deleted_by'];
 
     public function data_detail()
     {

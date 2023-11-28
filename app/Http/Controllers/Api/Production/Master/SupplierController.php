@@ -32,7 +32,6 @@ class SupplierController extends Controller
         } else {
             $supplierQuery->orderBy('id', 'asc');
         }
-
         return MasterSupplierResource::collection($supplierQuery->paginate($limit));
     }
     public function store(Request $request)

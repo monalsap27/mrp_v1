@@ -30,6 +30,7 @@ class CatergoriesController extends Controller
         } else {
             $categoriesQuery->orderBy('id', 'asc');
         }
+
         return GeneralMasterResource::collection($categoriesQuery->paginate($limit));
     }
     public function store(Request $request)

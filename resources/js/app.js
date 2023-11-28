@@ -23,7 +23,6 @@ Object.keys(filters).forEach((key) => {
 });
 
 Vue.config.productionTip = false;
-console.log(store);
 new Vue({
   el: '#app',
   router,
