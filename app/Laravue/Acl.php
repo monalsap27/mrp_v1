@@ -44,6 +44,14 @@ final class Acl
     const PERMISSION_VIEW_MENU_APPROVAL_PRODUCT = 'view menu approval product';
     const PERMISSION_VIEW_MENU_MANUFACTURING = 'view menu manufaturing';
     const PERMISSION_VIEW_MENU_APPROVAL_MANUFACTURING = 'view menu approval manufaturing';
+    const PERMISSION_VIEW_MENU_PURCHASING = 'view menu purchasing';
+    const PERMISSION_VIEW_MENU_APPROVAL_PURCHASING = 'view menu approval purchasing';
+    const PERMISSION_VIEW_MENU_VENDOR = 'view menu vendor';
+    const PERMISSION_VIEW_MENU_SALES = 'view menu sales';
+
+
+
+
 
 
 

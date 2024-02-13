@@ -20,10 +20,10 @@
             </div>
             <p>
               Lorem ipsum represents a long-held tradition for designers,
-              typographers and the like. Some people hate it and argue for
-              its demise, but others ignore the hate as they create awesome
-              tools to help create filler text for everyone from bacon lovers
-              to Charlie Sheen fans.
+              typographers and the like. Some people hate it and argue for its
+              demise, but others ignore the hate as they create awesome tools to
+              help create filler text for everyone from bacon lovers to Charlie
+              Sheen fans.
             </p>
             <ul class="list-inline">
               <li>
@@ -38,8 +38,7 @@
               </li>
               <li class="pull-right">
                 <a href="#" class="link-black text-sm">
-                  <svg-icon icon-class="comment" />Comments
-                  (5)
+                  <svg-icon icon-class="comment" />Comments (5)
                 </a>
               </li>
             </ul>
@@ -62,22 +61,20 @@
             </div>
             <p>
               Lorem ipsum represents a long-held tradition for designers,
-              typographers and the like. Some people hate it and argue for
-              its demise, but others ignore the hate as they create awesome
-              tools to help create filler text for everyone from bacon lovers
-              to Charlie Sheen fans.
+              typographers and the like. Some people hate it and argue for its
+              demise, but others ignore the hate as they create awesome tools to
+              help create filler text for everyone from bacon lovers to Charlie
+              Sheen fans.
             </p>
             <el-input placeholder="Response">
-              <el-button slot="append">
-                Send
-              </el-button>
+              <el-button slot="append"> Send </el-button>
             </el-input>
           </div>
           <div class="post">
             <div class="user-block">
               <img
                 class="img-circle img-bordered-sm"
-                src="https://cdn3.iconfinder.com/data/icons/movies-3/32/daredevil-superhero-marvel-comics-mutant-avatar-512.png"
+                src="/svg/logoS.png"
                 alt="User Image"
               >
               <span class="username">
@@ -108,8 +105,7 @@
               </li>
               <li class="pull-right">
                 <a href="#" class="link-black text-sm">
-                  <svg-icon icon-class="comment" />Comments
-                  (5)
+                  <svg-icon icon-class="comment" />Comments (5)
                 </a>
               </li>
             </ul>
@@ -155,19 +151,66 @@
         <el-form-item label="Email">
           <el-input v-model="user.email" :disabled="user.role === 'admin'" />
         </el-form-item>
+        <el-form-item label="Signature">
+          <el-upload
+            class="upload-demo"
+            action=""
+            :http-request="uploadFiles"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            list-type="picture"
+          >
+            <el-button slot="trigger" size="small" type="primary">Click to upload</el-button>
+            <el-button
+              size="small"
+              type="primary"
+              @click="centerDialogVisible = true"
+            >Click to new</el-button>
+            <div slot="tip" class="el-upload__tip">
+              jpg/png files with a size less than 500kb
+            </div>
+          </el-upload>
+        </el-form-item>
         <el-form-item>
-          <el-button type="primary" :disabled="user.role === 'admin'" @click="onSubmit">
+          <el-button
+            type="primary"
+            :disabled="user.role === 'admin'"
+            @click="onSubmit"
+          >
             Update
           </el-button>
         </el-form-item>
       </el-tab-pane>
     </el-tabs>
+    <el-dialog
+      title="Signature"
+      :visible.sync="centerDialogVisible"
+      width="30%"
+      center
+    >
+      <div class="container">
+        <VueSignaturePad
+          id="signature"
+          ref="signaturePad"
+          width="100%"
+          height="300px"
+          :options="options"
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="danger" @click="centerDialogVisible = false">Cancel</el-button>
+        <el-button type="info" @click="undo">Undo</el-button>
+        <el-button type="success" @click="save">Confirm</el-button>
+      </span>
+    </el-dialog>
   </el-card>
 </template>
 
 <script>
 import Resource from '@/api/resource';
 const userResource = new Resource('users');
+import { uploadSignature, ShowSignature } from '@/api/user_resource';
 
 export default {
   props: {
@@ -185,17 +228,66 @@ export default {
   },
   data() {
     return {
+      centerDialogVisible: false,
       activeActivity: 'first',
       carouselImages: [
         'https://cdn.laravue.dev/photo1.png',
-        'https://cdn.laravue.dev/photo2.png',
-        'https://cdn.laravue.dev/photo3.jpg',
+        'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100',
+        '/svg/logoS.png',
         'https://cdn.laravue.dev/photo4.jpg',
       ],
       updating: false,
+      options: { penColor: '#c0f' },
+      fileList: [],
     };
   },
+  created() {
+    const id = this.$route.params && this.$route.params.id;
+    this.fetchData(id);
+  },
   methods: {
+    handleRemove(file, fileList) {
+      console.log(file, fileList);
+    },
+    handlePreview(file) {
+      console.log(file);
+    },
+    fetchData(id) {
+      ShowSignature(id)
+        .then((response) => {
+          this.fileList.push({
+            name: response.data.signature_file,
+            url: 'storage/signature/' + response.data.signature_file,
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    uploadFiles(file) {
+      const fd = new FormData();
+      fd.append('file', file.file);
+      fd.append('id', this.user.id);
+      fd.append('isImage', 'true');
+      uploadSignature(fd)
+        .then((response) => {
+          this.$message({
+            message:
+              'New categories ' +
+              this.newCategories.name +
+              ' has been created successfully.',
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.$router.go(this.$router.currentRoute);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.categoriesCreating = false;
+        });
+    },
     handleClick(tab, event) {
       console.log('Switching tab ', tab, event);
     },
@@ -203,7 +295,7 @@ export default {
       this.updating = true;
       userResource
         .update(this.user.id, this.user)
-        .then(response => {
+        .then((response) => {
           this.updating = false;
           this.$message({
             message: 'User information has been updated successfully',
@@ -211,10 +303,47 @@ export default {
             duration: 5 * 1000,
           });
         })
-        .catch(error => {
+        .catch((error) => {
           console.log(error);
           this.updating = false;
         });
+    },
+    undo() {
+      this.$refs.signaturePad.undoSignature();
+    },
+    save() {
+      const { data } = this.$refs.signaturePad.saveSignature();
+      const fd = new FormData();
+      fd.append('file', data);
+      fd.append('id', this.user.id);
+      fd.append('isImage', 'false');
+      uploadSignature(fd)
+        .then((response) => {
+          console.log(response);
+          this.$message({
+            message: response.message,
+            type: 'success',
+            duration: 5 * 1000,
+          });
+          this.centerDialogVisible = false;
+          this.$router.go(this.$router.currentRoute);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          this.categoriesCreating = false;
+        });
+    },
+    change() {
+      this.options = {
+        penColor: '#00f',
+      };
+    },
+    resume() {
+      this.options = {
+        penColor: '#c0f',
+      };
     },
   },
 };
@@ -223,7 +352,8 @@ export default {
 <style lang="scss" scoped>
 .user-activity {
   .user-block {
-    .username, .description {
+    .username,
+    .description {
       display: block;
       margin-left: 50px;
       padding: 2px 0;
@@ -270,7 +400,8 @@ export default {
       font-size: 13px;
     }
     .link-black {
-      &:hover, &:focus {
+      &:hover,
+      &:focus {
         color: #999;
       }
     }
@@ -287,8 +418,16 @@ export default {
     background-color: #99a9bf;
   }
 
-  .el-carousel__item:nth-child(2n+1) {
+  .el-carousel__item:nth-child(2n + 1) {
     background-color: #d3dce6;
   }
+}
+#signature {
+  border: double 3px transparent;
+  border-radius: 5px;
+  background-image: linear-gradient(white, white),
+    radial-gradient(circle at top left, #4bc5e8, #9f6274);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
 }
 </style>

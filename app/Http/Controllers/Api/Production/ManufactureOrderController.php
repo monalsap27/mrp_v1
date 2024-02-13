@@ -2,20 +2,14 @@
 
 namespace App\Http\Controllers\Api\Production;
 
-use App\Laravue\Models\Production\StockOut;
 use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use App\Http\Resources\GeneralCollection;
-use App\Laravue\Models\Production\LogProduction;
-use App\Laravue\Models\Production\ManufactureMaterial;
-use App\Laravue\Models\Production\ManufactureOrder;
-use App\Laravue\Models\Production\ManufactureOrderDetail;
-use App\Laravue\Models\Production\ProductDetail;
-use Carbon\Carbon;
-use Carbon\CarbonInterval;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Carbon\{Carbon, CarbonInterval};
+use App\Http\Resources\GeneralCollection;
+use App\Laravue\Models\Production\{LogProduction, ManufactureMaterial, ManufactureOrder, ManufactureOrderDetail, ProductDetail, StockIn, StockOut};
 
 class ManufactureOrderController extends Controller
 {
@@ -43,15 +37,17 @@ class ManufactureOrderController extends Controller
     {
         $searchParams = $request->all();
         $ManufactureOrderQuery = ManufactureOrder::query()
-            ->select("manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date as production_date", "manufacture_order.status", "manufacture_order.total_timing", DB::RAW("FLOOR(avg(im.is_available)) as is_available"))
+            ->select("manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date as production_date", "manufacture_order.status", "manufacture_order.total_timing", "order.nomor as nomor_so", DB::RAW("FLOOR(avg(im.is_available)) as is_available"))
             ->leftJoin("product.product", "manufacture_order.product_id", "product.id")
             ->leftJoin("product.product_detail", "product.id", "product_detail.product_id")
+            ->leftJoin("sales.order_detail", "order_detail.id", "manufacture_order.sales_order_detail_id")
+            ->leftJoin("sales.order", "order.id", "order_detail.order_id")
             ->leftJoin(
                 DB::RAW("(SELECT material_id, sum(qty_produksi) qty_produksi, qty_stock, CASE WHEN ( qty_stock - sum(qty_produksi) ) >= 0 THEN '1' ELSE 0 END is_available FROM product.ingredients_material group by material_id, qty_stock) as im"),
                 "im.material_id",
                 "product_detail.material_id"
             )->orderBy('manufacture_order.status', 'asc')
-            ->groupBy("manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date", "manufacture_order.status", "manufacture_order.total_timing");
+            ->groupBy("manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date", "manufacture_order.status", "manufacture_order.total_timing", "order.nomor");
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
         if (!empty($keyword)) {
@@ -132,19 +128,20 @@ class ManufactureOrderController extends Controller
                 $total_qty  = (int)$records->qty + (int)$searchParams['qty'];
                 $data_stock = DB::table('product.data_stock_by_control_id')->limit($total_qty)->where('product_id', $records->material_id)->orderBy('created_at', 'asc')->get();
                 foreach ($data_stock as $record_ds) {
-                    $manufacture_material  = new ManufactureMaterial;
-                    $manufacture_material->manufacture_order_id = $searchParams['id'];
-                    $manufacture_material->control_id = $record_ds->control_id;
-                    $manufacture_material->product_id = $records->material_id;
-                    $manufacture_material->save();
-
-                    $stock_out  =   new StockOut;
+                    $stock_out = new StockOut;
                     $stock_out->control_id = $record_ds->control_id;
                     $stock_out->harga_beli = $record_ds->harga_beli;
                     $stock_out->harga_jual = $record_ds->harga_jual;
                     $stock_out->product_id = $records->material_id;
                     $stock_out->description = 'Produksi ' . $searchParams['name'] . ' Tanggal ' . date("d M Y");
                     $stock_out->save();
+
+                    $manufacture_material  = new ManufactureMaterial;
+                    $manufacture_material->data_stock_out()->associate($stock_out);
+                    $manufacture_material->manufacture_order_id = $searchParams['id'];
+                    $manufacture_material->control_id = $record_ds->control_id;
+                    $manufacture_material->product_id = $records->material_id;
+                    $manufacture_material->save();
                 }
             }
             ManufactureOrder::where('id', $searchParams['id'])->update(['status' => '3', 'start_at' => new DateTime()]);
@@ -170,13 +167,7 @@ class ManufactureOrderController extends Controller
             ->get();
         $date_timeline = 0;
         $button  = 'info';
-        $disable_start = false;
         foreach ($records as $i => $records) {
-            if (empty($records->is_start)) {
-                $disable_start = false;
-            } elseif (!empty($records->is_start) && !empty($records->finish_at)) {
-                $disable_start = true;
-            }
             if ($i == 0) {
                 $date = date_format(date_create(empty($records->start_at) ? $records->created_at : $records->start_at), "d-m-Y H:i:s");
             } else {
@@ -197,7 +188,7 @@ class ManufactureOrderController extends Controller
             }
             $arr_detail[] = array(
                 'index' => $i,
-                'disable_start' => $disable_start,
+                'disable_start' => (empty($records->finish_at)) ? false : true,
                 'id' => $records->id,
                 'name' => $records->name,
                 'code' => $records->code,
@@ -283,17 +274,107 @@ class ManufactureOrderController extends Controller
             if ($searchParams['type'] == 1) {
                 $detail->is_start = '2';
                 $detail->actual_timing = (int)$detail->actual_timing + (int)$totalDuration;
+                $detail->save();
             } else if ($searchParams['type'] == 2) {
                 $detail->is_start = '3';
                 $detail->actual_timing = (int)$detail->actual_timing + (int)$totalDuration;
                 $detail->finish_at = new DateTime();
+                $detail->save();
+                $get_finish_at = ManufactureOrderDetail::where('manufacture_order_id', $detail->manufacture_order_id)
+                    ->selectRaw("(count(id) - count(finish_at)) as total_finish_at ")
+                    ->first();
+                if ($get_finish_at->total_finish_at == '0') {
+                    $manufacture_order = ManufactureOrder::where('id', $detail->manufacture_order_id)
+                        ->first();
+                    $manufacture_order->status = '4';
+                    $manufacture_order->finish_at = new DateTime();
+                    $startTimeOrder = Carbon::parse($manufacture_order->start_at);
+                    $totalDuration = $endTime->diffInMinutes($startTimeOrder);
+                    $manufacture_order->actual_timing = $totalDuration;
+                    $manufacture_order->code = 'MO' . date("ymd") . $detail->manufacture_order_id;
+                    $manufacture_order->save();
+
+                    for ($x = 0; $x < $manufacture_order->qty; $x++) {
+                        $get_id_max = StockIn::where("product_id", $manufacture_order->product)->max("id");
+                        $stock_in = new StockIn();
+                        $stock_in->control_id = $manufacture_order->product_id . date("ymd") . (empty($get_id_max) ? '1' : ($get_id_max + 1));
+                        $stock_in->product_id = $manufacture_order->product_id;
+                        $stock_in->description = ' Hasil Produksi ' . $manufacture_order->code;
+                        $stock_in->save();
+                    }
+                }
             }
-            $detail->save();
             DB::commit();
             return response()->json(['message' => 'updated data successfully !'], 200);
         } catch (\Exception $e) {
             DB::rollback();
             return $e->getMessage();
         }
+    }
+    public function storeChangeControlID(Request $request)
+    {
+        $searchParams = $request->all();
+        DB::beginTransaction();
+        try {
+            $manufacture_material = ManufactureMaterial::where('id', $searchParams['id'])->first();
+            $manufacture_material->control_id = $request->control_id;
+            if ($manufacture_material->save()) {
+                $stock_out = StockOut::where('id', $manufacture_material->stock_out_id)->first();
+                $stock_out->control_id = $request->control_id;
+                if ($stock_out->save()) {
+                    DB::commit();
+                    return response()->json(['message' => 'has been created successfully !'], 200);
+                }
+            } else {
+                DB::rollback();
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return $e->getMessage();
+        }
+    }
+    public function getMaterialUsed(Request $request)
+    {
+        $searchParams = $request->all();
+        $query = ManufactureMaterial::selectRaw('manufacture_material.id, manufacture_material.manufacture_order_id, manufacture_material.product_id, product.code, product.name, manufacture_material.control_id')
+            ->where('product_id', $searchParams['product_id'])
+            ->where('manufacture_order_id', $searchParams['manufacture_order_id'])
+            ->leftJoin('product.product', 'product.id', 'manufacture_material.product_id');
+
+        return new GeneralCollection($query->get());
+    }
+
+    public function dataManufactureOrderCompleted(Request $request)
+    {
+        $searchParams = $request->all();
+        $ManufactureOrderQuery = ManufactureOrder::query()
+            ->select("manufacture_order.date", "manufacture_order.product_id", "manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date as production_date", "manufacture_order.status", "manufacture_order.total_timing", "finish_at", "manufacture_order.code", "manufacture_order.total_timing", "manufacture_order.actual_timing")
+            ->leftJoin("product.product", "manufacture_order.product_id", "product.id")
+            ->orderBy('manufacture_order.status', 'asc')
+            ->where("manufacture_order.status", 4);
+        $keyword = Arr::get($searchParams, 'keyword', '');
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        if (!empty($keyword)) {
+            $ManufactureOrderQuery->where('product.name', 'LIKE', '%' . $keyword . '%');
+        }
+        return new GeneralCollection($ManufactureOrderQuery->paginate($limit));
+    }
+    public function dataListThisMonth()
+    {
+        $query = ManufactureOrder::selectRaw('manufacture_order.id, product.name, product.code, manufacture_order.status, m_category.name as category_name, manufacture_order.qty')
+            ->leftJoin('product.product', 'manufacture_order.product_id', 'product.id')
+            ->leftJoin('product.m_category', 'product.m_category_id', 'm_category.id')
+            ->whereRaw("EXTRACT(MONTH from date) <= EXTRACT(MONTH from CURRENT_DATE)");
+
+        return new GeneralCollection($query->get());
+    }
+    public function dataManufactureOrderSchedule()
+    {
+        $ManufactureOrderQuery = ManufactureOrder::query()
+            ->select("manufacture_order.date", "manufacture_order.product_id", "manufacture_order.id", "manufacture_order.qty", "manufacture_order.created_at", "product.name", "manufacture_order.date as production_date", "manufacture_order.status", "manufacture_order.total_timing", DB::raw("coalesce(finish_at, current_timestamp) as finish_at"), "manufacture_order.total_timing", "manufacture_order.actual_timing")
+            ->leftJoin("product.product", "manufacture_order.product_id", "product.id")
+            ->orderBy('manufacture_order.status', 'asc')
+            ->get();
+        return new GeneralCollection($ManufactureOrderQuery);
     }
 }

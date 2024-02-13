@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Api\Production;
 
-use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GeneralCollection;
 use App\Http\Resources\Production\StockResource;
 use App\Laravue\Models\Production\{StockIn, StockOut};
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ class StockController extends Controller
     {
         $searchParams = $request->all();
         $productQuery = DB::table('product.data_stock_product')
-            ->select('id', 'name', 'total_timing', 'code', 'type', 'qty_stock as qty', 'harga_beli', 'harga_jual', 'safety_stock', 'created_at');
+            ->select('id', 'name', 'total_timing', 'code', 'type', 'qty_stock as qty', 'harga_beli', 'harga_jual', 'safety_stock', 'created_at', 'm_supplier_id');
         $sort = Arr::get($searchParams, 'sort', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
@@ -40,13 +40,14 @@ class StockController extends Controller
     public function dataIN(Request $request)
     {
         $searchParams = $request->all();
-        $records = StockIn::query()
+        $productQuery = StockIn::query()
             ->select('stock_in.created_at', 'stock_in.control_id', 'stock_in.harga_beli', 'stock_in.harga_jual', 'stock_in.product_id')
             ->WHERE("stock_in.product_id", $searchParams['product_id'])
             ->whereNull("stock_in.is_out")
-            ->orderBy('stock_in.created_at', 'desc')
-            ->get();
-        return response()->json($records, 200);
+            ->orderBy('stock_in.created_at', 'desc');
+
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        return new GeneralCollection($productQuery->paginate($limit));
     }
     public function store(Request $request)
     {
@@ -70,7 +71,6 @@ class StockController extends Controller
             return $e->getMessage();
         }
     }
-
     public function storeOut(Request $request)
     {
         DB::beginTransaction();
@@ -111,5 +111,28 @@ class StockController extends Controller
             ->select("control_id", "harga_beli", "harga_jual", "created_at", "description")
             ->orderBy("created_at", "desc");
         return StockResource::collection($records->paginate($limit));
+    }
+    public function showControlID(Request $request)
+    {
+        $searchParams = $request->all();
+        $query = StockIn::selectRaw('id, control_id')
+            ->where('product_id', $searchParams['product_id'])
+            ->whereNotIn('control_id', function ($query) {
+                $query->select('control_id')->from('product.stock_out');
+            });
+        return new GeneralCollection($query->get());
+    }
+    public function showByProduct(Request $request)
+    {
+        $searchParams = $request->all();
+        $productQuery = DB::table('product.data_stock_product')
+            ->select('id', 'qty_stock')
+            ->where('data_stock_product.id', $searchParams['id'])
+            ->first();
+        $arr_price  =  [
+            'id' => empty($productQuery->id) ? '0' : $productQuery->id,
+            'stock' => empty($productQuery->qty_stock) ? '0' : $productQuery->qty_stock,
+        ];
+        return new GeneralCollection($arr_price);
     }
 }

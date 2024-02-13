@@ -20,6 +20,25 @@ import productionDashboard from './modules/production/dashboard';
 import productionMaster from './modules/production/master';
 import productionProduct from './modules/production/product';
 import productionManagement from './modules/production/productionManagement';
+import productionRequest from './modules/production/request';
+import purchasingDashboard from './modules/purchasing/dashboard';
+import purchasingMaster from './modules/purchasing/master';
+import purchasingSubmit from './modules/purchasing/submit';
+import purchasingOrders from './modules/purchasing/order';
+import purchasingApproval from './modules/purchasing/approval';
+import purchasingInbound from './modules/purchasing/inbound';
+import vendorDashboard from './modules/vendor/dashboard';
+import vendorOrders from './modules/vendor/request';
+import vendorShipping from './modules/vendor/shipping';
+import customerDashboard from './modules/customer/dashboard';
+import customerMaster from './modules/customer/master';
+import customerCustomer from './modules/customer/customer';
+import customerDeposit from './modules/customer/deposit';
+import customerInbound from './modules/customer/inbound';
+import salesDashboard from './modules/sales/dashboard';
+import salesMaster from './modules/sales/master';
+import salesOrders from './modules/sales/order';
+import salesShipping from './modules/sales/shipping';
 
 /**
  * Sub-menu only appear when children.length>=1
@@ -107,13 +126,42 @@ export const constantRoutes = [
     ],
   },
 ];
+export const asyncRoutesAdmin = [adminRoutes, permissionRoutes];
 export const asyncRoutesProduction = [
   productionDashboard,
   productionMaster,
   productionProduct,
   productionManagement,
+  productionRequest,
+  salesShipping,
 ];
-export const asyncRoutesAdmin = [adminRoutes, permissionRoutes];
+export const asyncRoutesPurchasing = [
+  purchasingDashboard,
+  purchasingMaster,
+  purchasingSubmit,
+  purchasingOrders,
+  purchasingApproval,
+  purchasingInbound,
+];
+export const asyncRoutesVendor = [
+  vendorDashboard,
+  vendorOrders,
+  vendorShipping,
+];
+export const asyncRoutesCustomer = [
+  customerDashboard,
+  customerMaster,
+  customerCustomer,
+  customerDeposit,
+  customerInbound,
+];
+export const asyncRoutesSales = [
+  salesDashboard,
+  salesMaster,
+  salesOrders,
+  salesShipping,
+];
+
 export const asyncRoutes = [{ path: '*', redirect: '/404', hidden: true }];
 
 const createRouter = () =>

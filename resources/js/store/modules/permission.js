@@ -2,7 +2,11 @@ import {
   asyncRoutes,
   constantRoutes,
   asyncRoutesProduction,
-  // asyncRoutesAdmin,
+  asyncRoutesAdmin,
+  asyncRoutesPurchasing,
+  asyncRoutesVendor,
+  asyncRoutesCustomer,
+  asyncRoutesSales,
 } from '@/router';
 
 /**
@@ -72,17 +76,27 @@ const mutations = {
 
 const actions = {
   generateRoutes({ commit }, { routes, roles, permissions }) {
-    // var pathUrl = window.location.hash;
-    console.log(window.location);
+    var pathUrl = window.location.hash.split('/')[1].split('-')[0];
+    console.log(pathUrl);
     return new Promise((resolve) => {
       let accessedRoutes;
+
       if (!roles.includes('visitor')) {
-        // if (pathUrl === '#/production') {
-        accessedRoutes = asyncRoutesProduction || [];
-        // } else if (pathUrl === '#/administrator') {
-        // accessedRoutes = asyncRoutesAdmin || [];
-        // } else {
-        //   accessedRoutes = routes || [];
+        if (pathUrl === 'production') {
+          accessedRoutes = asyncRoutesProduction || [];
+        } else if (pathUrl === 'administrator') {
+          accessedRoutes = asyncRoutesAdmin || [];
+        } else if (pathUrl === 'purchasing') {
+          accessedRoutes = asyncRoutesPurchasing || [];
+        } else if (pathUrl === 'vendor') {
+          accessedRoutes = asyncRoutesVendor || [];
+        } else if (pathUrl === 'customer') {
+          accessedRoutes = asyncRoutesCustomer || [];
+        } else if (pathUrl === 'sales') {
+          accessedRoutes = asyncRoutesSales || [];
+        } else {
+          accessedRoutes = constantRoutes || [];
+        }
         // }
       } else {
         accessedRoutes = filterAsyncRoutes(asyncRoutes, roles, permissions);

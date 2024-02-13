@@ -43,7 +43,7 @@ class ProductController extends Controller
             ->leftJoin("product.m_category as b", "product.m_category_id", "b.id")
             ->leftJoin("product.m_unit as c", "product.m_unit_id", "c.id")
             ->select('product.id', 'product.name', 'product.code', 'sales_price', 'b.name as category_name', 'sales_price', 'unit_cost', 'product.status', 'c.name as unit_name')
-            ->where('type', '1')
+            ->where('product.type', '1')
             ->orderBy('product.status', 'asc')
             ->orderBy('product.created_at', 'desc');
         $sort = Arr::get($searchParams, 'sort', '');
@@ -206,7 +206,7 @@ class ProductController extends Controller
             'm_category_id' => $product->m_category_id,
             'm_unit_id' => $product->m_unit_id,
             'm_supplier_id' => $product->m_supplier_id,
-            'total_workforce' => $product->total_workforce,\
+            'total_workforce' => $product->total_workforce,
             'total_timing' => $product->total_timing,
             'category_name' => $product['categories']->name,
             'unit_name' => $product['unit']->name,

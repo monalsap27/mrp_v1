@@ -44,6 +44,7 @@ class SupplierController extends Controller
                 'description' => $params['description'],
                 'phone'       => $params['phone'],
                 'address'     => $params['address'],
+                'type'        => $params['type'],
                 'created_by'  => Auth::user()->id
             ]);
         } else {
@@ -52,6 +53,7 @@ class SupplierController extends Controller
             $supplier->code        = $params['code'];
             $supplier->phone       = $params['phone'];
             $supplier->address     = $params['address'];
+            $supplier->type        = $params['type'];
             $supplier->updated_by  = Auth::user()->id;
             $supplier->save();
         }

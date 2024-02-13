@@ -13,6 +13,10 @@ class StockOut extends Model
     protected $table = 'product.stock_out';
     protected $fillable = ['product_id', 'control_id', 'harga_beli', 'harga_jual', 'description', 'created_by', 'updated_by', 'deleted_by'];
 
+    public function data_manufactur()
+    {
+        return $this->hasOne('App\Models\Production\ManufactureMaterial');
+    }
     protected static function boot()
     {
         parent::boot();

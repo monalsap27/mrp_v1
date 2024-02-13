@@ -53,6 +53,8 @@ Route::group(['prefix' => '/production', 'as' => 'product'], function () {
             Route::post('/dataIN', [StockController::class, 'dataIN'])->middleware('permission:' . Acl::PERMISSION_VIEW_MENU_PRODUCT);
             Route::post('/storeOut', [StockController::class, 'storeOut'])->middleware('permission:' . Acl::PERMISSION_VIEW_MENU_PRODUCT);
             Route::get('/showMutasi', [StockController::class, 'showMutasi'])->middleware('permission:' . Acl::PERMISSION_VIEW_MENU_PRODUCT);
+            Route::post('/showControlID', [StockController::class, 'showControlID'])->middleware();
+            Route::post('/showByProduct', [StockController::class, 'showByProduct'])->middleware('permission:' . Acl::PERMISSION_VIEW_MENU_PRODUCT);
         });
     });
     // Workstation
@@ -68,6 +70,7 @@ Route::group(['prefix' => '/production', 'as' => 'product'], function () {
             Route::get('/data', [WorkstationGroupController::class, 'data'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
             Route::post('/store', [WorkstationGroupController::class, 'store'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
             Route::post('/delete', [WorkstationGroupController::class, 'destroy'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+            Route::post('/dataDetail', [WorkstationGroupController::class, 'dataDetail'])->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         });
     });
     // Manufacture
@@ -84,5 +87,10 @@ Route::group(['prefix' => '/production', 'as' => 'product'], function () {
         Route::post('/showDetailMaterial', [ManufactureOrderController::class, 'showDetailMaterial'])->middleware();
         Route::post('/startWorkstation', [ManufactureOrderController::class, 'startWorkstation'])->middleware();
         Route::post('/pauseORFinish', [ManufactureOrderController::class, 'pauseORFinish'])->middleware();
+        Route::post('/getMaterialUsed', [ManufactureOrderController::class, 'getMaterialUsed'])->middleware();
+        Route::post('/storeChangeControlID', [ManufactureOrderController::class, 'storeChangeControlID'])->middleware();
+        Route::post('/dataManufactureOrderCompleted', [ManufactureOrderController::class, 'dataManufactureOrderCompleted'])->middleware();
+        Route::get('/dataListThisMonth', [ManufactureOrderController::class, 'dataListThisMonth'])->middleware();
+        Route::get('/dataManufactureOrderSchedule', [ManufactureOrderController::class, 'dataManufactureOrderSchedule'])->middleware();
     });
 });

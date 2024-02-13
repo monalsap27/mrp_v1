@@ -11,7 +11,7 @@ class ManufactureOrder extends Model
     use SoftDeletes;
     use HasFactory;
     protected $table = 'product.manufacture_order';
-    protected $fillable = ['product_id', 'qty', 'date', 'status', 'note', 'approved_by', 'approved_at',  'created_by', 'updated_by', 'deleted_by', 'total_timing', 'actual_timing'];
+    protected $fillable = ['product_id', 'qty', 'date', 'status', 'note', 'approved_by', 'approved_at',  'created_by', 'updated_by', 'deleted_by', 'total_timing', 'actual_timing', 'code', 'sales_order_detail_id'];
 
     protected static function boot()
     {

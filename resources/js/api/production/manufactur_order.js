@@ -7,7 +7,6 @@ export function createManufacture(data) {
     data,
   });
 }
-
 export function fetchListApproval(query) {
   return request({
     url: '/production/manufacture/dataApproval',
@@ -86,5 +85,45 @@ export function pauseORFinish(data) {
     url: '/production/manufacture/pauseORFinish',
     method: 'post',
     data,
+  });
+}
+export function updateMaterial(data) {
+  return request({
+    url: '/production/manufacture/updateMaterial',
+    method: 'post',
+    data,
+  });
+}
+export function getMaterialUsed(data) {
+  return request({
+    url: '/production/manufacture/getMaterialUsed',
+    method: 'post',
+    data,
+  });
+}
+export function storeChangeControlID(data) {
+  return request({
+    url: '/production/manufacture/storeChangeControlID',
+    method: 'post',
+    data,
+  });
+}
+export function fetchListCompleted(query) {
+  return request({
+    url: '/production/manufacture/dataManufactureOrderCompleted',
+    method: 'post',
+    params: query,
+  });
+}
+export function fetchListThisMonth() {
+  return request({
+    url: '/production/manufacture/dataListThisMonth',
+    method: 'get',
+  });
+}
+export function fetchListSchedule() {
+  return request({
+    url: '/production/manufacture/dataManufactureOrderSchedule',
+    method: 'get',
   });
 }

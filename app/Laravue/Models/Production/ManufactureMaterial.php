@@ -4,6 +4,7 @@ namespace App\Laravue\Models\Production;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ManufactureMaterial extends Model
@@ -13,6 +14,14 @@ class ManufactureMaterial extends Model
     protected $table = 'product.manufacture_material';
     protected $fillable = ['manufacture_order_detail_id', 'control_id', 'created_by', 'updated_by', 'deleted_by'];
 
+    public function data_stock_out()
+    {
+        return $this->belongsTo(StockOut::class, 'stock_out_id');
+    }
+    public function stock_out(): HasMany
+    {
+        return $this->hasMany(StockOut::class);
+    }
     protected static function boot()
     {
         parent::boot();

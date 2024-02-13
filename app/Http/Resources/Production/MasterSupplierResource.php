@@ -12,6 +12,7 @@ class MasterSupplierResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'code' => $this->code,
+            'type' => $this->type,
             'phone' => $this->phone,
             'address' => $this->address,
             'description' => $this->description,

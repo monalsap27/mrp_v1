@@ -16,7 +16,7 @@ class UnitController extends Controller
     public function data(Request $request)
     {
         $searchParams = $request->all();
-        $unitQuery = Unit::query();
+        $unitQuery = Unit::query()->where('type', '1');
         $sort = Arr::get($searchParams, 'sort', '');
         $keyword = Arr::get($searchParams, 'keyword', '');
         $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
@@ -40,12 +40,14 @@ class UnitController extends Controller
                 'name'        => $params['name'],
                 'code'        => $params['code'],
                 'description' => $params['description'],
+                'type'        => '1',
                 'created_by'  => Auth::user()->id
             ]);
         } else {
             $unit = Unit::find($params['id']);
             $unit->name        = $params['name'];
             $unit->code        = $params['code'];
+            $unit->type        = '1';
             $unit->description = $params['description'];
             $unit->updated_by  = Auth::user()->id;
             $unit->save();

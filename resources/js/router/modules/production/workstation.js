@@ -77,6 +77,18 @@ const productionWorkstation = {
       },
       hidden: true,
     },
+    {
+      path: 'edit-group/:id(\\d+)',
+      component: () =>
+        import('@/views/production/workstation/workstationGroupEdit'),
+      name: 'Group Workstation',
+      meta: {
+        title: 'Group Workstation',
+        icon: '',
+        permissions: ['manage workstation'],
+      },
+      hidden: true,
+    },
   ],
 };
 

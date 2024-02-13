@@ -7,7 +7,6 @@ export function fetchList(query) {
     params: query,
   });
 }
-
 export function createWorkstationGroup(data) {
   return request({
     url: '/production/workstation/group/store',
@@ -15,10 +14,18 @@ export function createWorkstationGroup(data) {
     data,
   });
 }
-
 export function DeleteWorkstation(id) {
   return request({
     url: '/production/workstation/group/delete',
+    method: 'post',
+    data: {
+      id: id,
+    },
+  });
+}
+export function fetchListDetail(id) {
+  return request({
+    url: '/production/workstation/group/dataDetail',
     method: 'post',
     data: {
       id: id,

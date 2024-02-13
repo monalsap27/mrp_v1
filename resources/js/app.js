@@ -9,13 +9,18 @@ import router from '@/router';
 import i18n from './lang'; // Internationalization
 import '@/icons'; // icon
 import '@/permission'; // permission control
+import VueSignaturePad from 'vue-signature-pad';
 
 import * as filters from './filters'; // global filters
 
-Vue.use(ElementUI, {
-  size: Cookies.get('size') || 'medium', // set element-ui default size
-  i18n: (key, value) => i18n.t(key, value),
-});
+Vue.use(
+  ElementUI,
+  {
+    size: Cookies.get('size') || 'medium', // set element-ui default size
+    i18n: (key, value) => i18n.t(key, value),
+  },
+  VueSignaturePad
+);
 
 // register global utility filters.
 Object.keys(filters).forEach((key) => {

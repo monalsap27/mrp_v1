@@ -71,13 +71,10 @@
           </template>
         </el-table-column>
         <el-table-column align="center" label="Status" width="150">
-          <template slot-scope="scope">
-            <span v-if="scope.row.status == 2">
-              <el-tag class="mx-1" type="info" effect="plain">Draft</el-tag>
-            </span>
-            <span v-if="scope.row.status == 3">
-              <el-tag class="mx-1" type="warning" effect="plain">On Progress</el-tag>
-            </span>
+          <template #default="scope">
+            <el-tag :type="scope.row && scope.row.status | statusType">
+              {{ scope.row && scope.row.status | statusFilter }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column align="center" label="Actions" width="100">
@@ -92,17 +89,10 @@
               </el-button>
             </span>
             <span v-if="scope.row.status == 3">
-              <!-- <el-button
-                type="warning"
-                size="small"
-                @click="handleNewOrder(scope.row.id)"
-              >
-                <svg-icon icon-class="pause" />
-              </el-button> -->
               <router-link
                 :to="'/production-management/detailProgress/' + scope.row.id"
               >
-                <el-button type="primary" size="small">
+                <el-button type="info" size="small">
                   <svg-icon icon-class="eye-melek" />
                 </el-button>
               </router-link>
@@ -158,11 +148,16 @@ export default {
   name: 'WorkstationList',
   components: { Pagination },
   filters: {
+    statusType(status) {
+      const statusMap = { 1: 'primary', 2: 'info', 3: 'warning', 4: 'success' };
+      return statusMap[status];
+    },
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger',
+        1: 'Waiting',
+        2: 'Draft',
+        3: 'On Progress',
+        4: 'Done',
       };
       return statusMap[status];
     },
@@ -173,7 +168,6 @@ export default {
       list: null,
       listDetail: null,
       dataManufaturingOrder: {},
-      newSafety: { safety_stock: 0 },
       listLoading: true,
       listDetailLoading: true,
       dialogTableVisible: false,

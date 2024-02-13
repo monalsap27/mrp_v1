@@ -58,18 +58,21 @@
           width="100px"
           prop="qty"
         />
-        <el-table-column
-          align="right"
-          label="Harga Beli"
-          width="100px"
-          prop="harga_beli"
-        />
+        <el-table-column align="right" label="Harga Beli" width="100px">
+          <template slot-scope="scope">
+            {{ scope.row.harga_beli }}
+          </template>
+        </el-table-column>
         <el-table-column
           align="right"
           label="Description"
           width="100px"
           prop="harga_jual"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.harga_jual }}
+          </template>
+        </el-table-column>
         <el-table-column align="center" label="Actions" width="200">
           <template slot-scope="scope">
             <el-button
@@ -94,7 +97,7 @@
             >
               <el-button
                 :disabled="scope.row.qty == 0"
-                type="warning"
+                type="danger"
                 size="small"
                 icon="exit"
                 @click="handleStockOut(scope.row.id)"
@@ -112,7 +115,7 @@
               <router-link
                 :to="'/production-product/mutasiStock/' + scope.row.id"
               >
-                <el-button type="primary" size="small">
+                <el-button type="info" size="small">
                   <svg-icon icon-class="eye-melek" />
                 </el-button>
               </router-link>

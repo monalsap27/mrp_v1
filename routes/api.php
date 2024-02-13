@@ -39,6 +39,8 @@ Route::namespace('Api')->group(function () {
         Route::get('users/{user}/permissions', 'UserController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::put('users/{user}/permissions', 'UserController@updatePermissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
         Route::get('roles/{role}/permissions', 'RoleController@permissions')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+        Route::post('users/showSignature', 'UserController@showSignature')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
+        Route::post('users/uploadSignature', 'UserController@uploadSignature')->middleware('permission:' . Acl::PERMISSION_PERMISSION_MANAGE);
     });
 });
 
@@ -150,3 +152,7 @@ Route::get('articles/{id}/pageviews', function ($id) {
 
 
 require __DIR__ . '/production.php';
+require __DIR__ . '/purchasing.php';
+require __DIR__ . '/vendor.php';
+require __DIR__ . '/customer.php';
+require __DIR__ . '/sales.php';

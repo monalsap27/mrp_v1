@@ -7,6 +7,7 @@ use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\GeneralCollection;
 use App\Laravue\Models\Production\{Workstation, WorkstationGroup};
 use App\Http\Resources\Production\WorkstationGroupResource;
 
@@ -50,7 +51,34 @@ class WorkstationGroupController extends Controller
         $ws_group->created_by = Auth::user()->id;
         $ws_group->save();
     }
-    public function destroy(Request $request)
+    public function dataDetail(Request $request)
     {
+        $searchParams = $request->all();
+        $limit = Arr::get($searchParams, 'limit', static::ITEM_PER_PAGE);
+        $data = WorkstationGroup::selectRaw("workstation_group.id,arr_workstation_id")
+            ->where('id', $searchParams['id'])->first();
+        $arr_detail = array();
+        $arr_id = array();
+        foreach (json_decode($data->arr_workstation_id) as $data) {
+            array_push($arr_id, $data);
+            $workstation = Workstation::find($data);
+            $arr_detail[] = array(
+                'id' => $workstation->id,
+                'name' => $workstation->name,
+                'code' => $workstation->code,
+                'status' => '1',
+            );
+        }
+        $workstation  = Workstation::select('id', 'name', 'code')->whereNotIn('id', $arr_id)->get();
+        foreach ($workstation as $data) {
+            $arr_detail[] = array(
+                'id' => $data->id,
+                'name' => $data->name,
+                'code' => $data->code,
+                'status' => '0',
+            );
+        }
+
+        return new GeneralCollection($arr_detail);
     }
 }

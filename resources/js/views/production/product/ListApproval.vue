@@ -93,7 +93,7 @@
             <router-link
               :to="'/production-product/detailProduct/' + scope.row.id"
             >
-              <el-button type="primary" size="small">
+              <el-button type="info" size="small">
                 <svg-icon icon-class="eye-melek" />
               </el-button>
             </router-link>

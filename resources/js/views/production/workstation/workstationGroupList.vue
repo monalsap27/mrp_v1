@@ -81,7 +81,9 @@
             content="Edit"
             placement="top-start"
           >
-            <router-link :to="'/production-workstation/edit/' + scope.row.id">
+            <router-link
+              :to="'/production-workstation/edit-group/' + scope.row.id"
+            >
               <el-button type="warning" size="small" icon="el-icon-edit" />
             </router-link>
           </el-tooltip>

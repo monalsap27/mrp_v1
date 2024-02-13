@@ -30,7 +30,7 @@ export default {
     };
   },
   watch: {
-    '$route': 'getUser',
+    $route: 'getUser',
   },
   created() {
     const id = this.$route.params && this.$route.params.id;

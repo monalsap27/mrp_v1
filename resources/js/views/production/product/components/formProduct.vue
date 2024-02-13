@@ -365,7 +365,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column fixed="right" label="Operations" width="180">
+            <el-table-column fixed="right" label="Action" width="180">
               <template #default="scope">
                 <el-button
                   v-if="!scope.row.edit"
@@ -570,7 +570,6 @@ export default {
       });
       this.listLoading = false;
     },
-
     fetchData(id) {
       this.loadingEdit = true;
       ShowProduct(id)

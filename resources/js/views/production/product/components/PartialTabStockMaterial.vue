@@ -41,11 +41,10 @@
             <span>{{ scope.row.name }}</span>
           </template>
         </el-table-column>
-
-        <el-table-column align="center" label="Code" prop="code" />
-        <el-table-column align="center" width="150">
+        <el-table-column align="center" label="Code" prop="code" width="150" />
+        <el-table-column align="center" width="70">
           <template #header>
-            <span style="margin-left: 10px">Safety Stock </span>
+            <span>Safety Stock </span>
           </template>
           <template #default="scope">
             <template v-if="scope.row.edit">
@@ -67,22 +66,25 @@
           width="100px"
           prop="qty"
         />
-
         <el-table-column
           align="right"
           label="Harga Beli"
           width="100px"
           prop="harga_beli"
-        />
+        >
+          <template slot-scope="scope">
+            {{ scope.row.harga_beli | toThousandFilter }}
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="right"
           label="Description"
           width="100px"
-          prop="harga_jual"
+          prop="description"
         />
 
-        <el-table-column align="center" label="Actions" width="200">
+        <el-table-column align="center" label="Actions" width="230">
           <template slot-scope="scope">
             <el-button
               v-if="scope.row.edit"
@@ -106,7 +108,7 @@
             >
               <el-button
                 :disabled="scope.row.qty == 0"
-                type="primary"
+                type="danger"
                 size="small"
                 icon="exit"
                 @click="handleStockOut(scope.row.id)"
@@ -124,10 +126,26 @@
               <router-link
                 :to="'/production-product/mutasiStock/' + scope.row.id"
               >
-                <el-button type="primary" size="small">
+                <el-button type="info" size="small">
                   <svg-icon icon-class="eye-melek" />
                 </el-button>
               </router-link>
+            </el-tooltip>
+            <el-tooltip
+              class="item"
+              effect="dark"
+              content="Stock OUT"
+              placement="top-start"
+            >
+              <el-button
+                :disabled="scope.row.qty >= scope.row.safety_stock"
+                type="primary"
+                size="small"
+                icon="exit"
+                @click="handleRequestPO(scope.row)"
+              >
+                <svg-icon icon-class="file-upload" />
+              </el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -295,6 +313,55 @@
           </div>
         </div>
       </el-dialog>
+      <el-dialog
+        :title="' Purchase Order '"
+        :visible.sync="dialogPurchaseOrderVisible"
+        width="30%"
+      >
+        <div v-loading="LoadingPurchaseOrder" class="form-container">
+          <el-form
+            ref="submitPurchaseOrder"
+            :rules="rulesPurchaseOrder"
+            :model="newPurchaseOrder"
+            label-position="left"
+            label-width="150px"
+            style="max-width: 100%"
+          >
+            <el-form-item :label="$t('QTY')" prop="qty">
+              <el-input-number
+                v-model="newPurchaseOrder.qty"
+                placeholder="type qty here"
+                :min="1"
+                style="width: 100%"
+              />
+            </el-form-item>
+            <el-form-item label=" Supplier " class="postInfo-container-item">
+              <el-select
+                v-model="newPurchaseOrder.supplier"
+                class="filter-item w-200"
+                placeholder="Please select"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item_supplier in supplierOptions"
+                  :key="item_supplier.id"
+                  :label="item_supplier.name"
+                  :value="item_supplier.id"
+                />
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <br>
+          <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogPurchaseOrderVisible = false">
+              {{ $t('table.cancel') }}
+            </el-button>
+            <el-button type="primary" @click="submitPO()">
+              {{ $t('table.confirm') }}
+            </el-button>
+          </div>
+        </div>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -310,6 +377,8 @@ import {
   fetchListStokIn,
   createStokOut,
 } from '@/api/production/stock';
+import { fetchList as listSupplier } from '@/api/production/master/supplier';
+import { storeSubmitPO } from '@/api/purchasing/submit';
 
 export default {
   name: 'WorkstationList',
@@ -331,15 +400,18 @@ export default {
       newStock: {},
       newStockOUT: {},
       newSafety: { safety_stock: 0 },
+      newPurchaseOrder: { qty: 1 },
       listLoading: true,
       listLoadingStock: true,
       listLoadingStockIn: true,
       dialogFormStockInVisible: false,
       dialogFormStockOutVisible: false,
+      dialogPurchaseOrderVisible: false,
+      LoadingPurchaseOrder: false,
       LoadingStockIN: false,
       LoadingStockOUT: false,
       listStockIN: null,
-      productOptions: [],
+      supplierOptions: [],
       query: {
         page: 1,
         limit: 15,
@@ -380,6 +452,15 @@ export default {
           {
             required: true,
             message: 'Description is required',
+            trigger: 'blur',
+          },
+        ],
+      },
+      rulesPurchaseOrder: {
+        qty: [
+          {
+            required: true,
+            message: 'Quantity is required',
             trigger: 'blur',
           },
         ],
@@ -482,6 +563,15 @@ export default {
         this.listLoadingStockIn = false;
       });
     },
+    async handleRequestPO(data) {
+      this.dialogPurchaseOrderVisible = true;
+      this.newPurchaseOrder.supplier = data.m_supplier_id;
+      this.newPurchaseOrder.product_id = data.id;
+      listSupplier().then((response) => {
+        this.supplierOptions = response.data;
+      });
+    },
+
     resetFormStockOut() {
       this.newStock = { id: '', description: '', role: 'stock' };
     },
@@ -490,6 +580,13 @@ export default {
         id: '',
         description: '',
         role: 'stock',
+      };
+    },
+    resetFormPO() {
+      this.newPurchaseOrder = {
+        product_id: '',
+        qty: '',
+        supplier: '',
       };
     },
     handleFilter() {
@@ -526,6 +623,34 @@ export default {
               });
               this.resetFormStockIN();
               this.dialogFormStockInVisible = false;
+              this.handleFilter();
+            })
+            .catch((error) => {
+              console.log(error);
+            })
+            .finally(() => {
+              this.LoadingStockIN = false;
+            });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    submitPO() {
+      this.$refs['submitPurchaseOrder'].validate((valid) => {
+        if (valid) {
+          this.newPurchaseOrder.roles = [this.newPurchaseOrder.role];
+          this.LoadingPurchaseOrder = true;
+          storeSubmitPO(this.newPurchaseOrder)
+            .then((response) => {
+              this.$message({
+                message: ' This product has been updated successfully.',
+                type: 'success',
+                duration: 5 * 1000,
+              });
+              this.resetFormPO();
+              this.dialogPurchaseOrderVisible = false;
               this.handleFilter();
             })
             .catch((error) => {

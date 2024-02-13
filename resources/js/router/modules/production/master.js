@@ -41,16 +41,6 @@ const productMaster = {
         permissions: ['manage master type'],
       },
     },
-    {
-      path: 'supplier',
-      component: () => import('@/views/production/master/supplier/List'),
-      name: 'SupplierList',
-      meta: {
-        title: 'Supplier',
-        icon: '3m',
-        permissions: ['manage master supplier'],
-      },
-    },
   ],
 };
 

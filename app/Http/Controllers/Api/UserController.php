@@ -1,4 +1,5 @@
 <?php
+
 /**
  * File UserController.php
  *
@@ -9,18 +10,14 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\PermissionResource;
-use App\Http\Resources\UserResource;
-use App\Laravue\JsonResponse;
-use App\Laravue\Models\Permission;
-use App\Laravue\Models\Role;
-use App\Laravue\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Validator;
+use Illuminate\Support\{Arr, Str};
+use Illuminate\Http\Request;
+use App\Laravue\JsonResponse;
+use App\Laravue\Models\{Permission, Role, User};
+use Illuminate\Support\Facades\{Auth, DB, Hash, Storage};
+use Illuminate\Http\Resources\Json\ResourceCollection;
+use App\Http\Resources\{GeneralCollection, PermissionResource, UserResource};
 
 /**
  * Class UserController
@@ -46,7 +43,9 @@ class UserController extends BaseController
         $keyword = Arr::get($searchParams, 'keyword', '');
 
         if (!empty($role)) {
-            $userQuery->whereHas('roles', function($q) use ($role) { $q->where('name', $role); });
+            $userQuery->whereHas('roles', function ($q) use ($role) {
+                $q->where('name', $role);
+            });
         }
 
         if (!empty($keyword)) {
@@ -120,7 +119,8 @@ class UserController extends BaseController
         }
 
         $currentUser = Auth::user();
-        if (!$currentUser->isAdmin()
+        if (
+            !$currentUser->isAdmin()
             && $currentUser->id !== $user->id
             && !$currentUser->hasPermission(\App\Laravue\Acl::PERMISSION_USER_MANAGE)
         ) {
@@ -163,7 +163,7 @@ class UserController extends BaseController
 
         $permissionIds = $request->get('permissions', []);
         $rolePermissionIds = array_map(
-            function($permission) {
+            function ($permission) {
                 return $permission['id'];
             },
 
@@ -229,5 +229,40 @@ class UserController extends BaseController
                 'array'
             ],
         ];
+    }
+    public function showSignature(Request $request)
+    {
+        $user = User::where('id', $request->id)
+            ->select('signature_file')
+            ->first();
+        $arr_order  =  [
+            'signature_file' => $user->signature_file,
+        ];
+        return new GeneralCollection($arr_order);
+    }
+    public function uploadSignature(Request $request)
+    {
+        try {
+            $get_user  = User::find($request->get('id'));
+            if (!empty($get_user->signature_file)) {
+                Storage::delete("public/signature/" . $get_user->signature_file);
+            }
+            if ($request->isImage == 'false') {
+                $data              = $request->file;
+                @list($type, $file_data) = explode(';', $data);
+                @list(, $file_data) = explode(',', $file_data);
+                $imageName = Str::random(10) . '.' . 'png';
+                Storage::disk('public')->put("signature/" . $imageName, base64_decode($file_data));
+            } else {
+                $imageName = Str::random(10) . '.' . $request->file->extension();
+                Storage::putFileAs('public/signature', $request->file, $imageName);
+            }
+            $get_user->signature_file = $imageName;
+            $get_user->save();
+            return response()->json(['message' => 'has been updated successfully !'], 200);
+        } catch (\Exception $ex) {
+            DB::rollBack();
+            return response()->json(['error' => $ex->getMessage()], 403);
+        }
     }
 }

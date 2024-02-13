@@ -11,5 +11,5 @@ class Unit extends Model
     use SoftDeletes;
     use HasFactory;
     protected $table = 'product.m_unit';
-    protected $fillable = ['name', 'code', 'description', 'created_by', 'updated_by', 'deleted_by'];
+    protected $fillable = ['name', 'code', 'description', 'created_by', 'updated_by', 'deleted_by', 'type'];
 }

@@ -40,16 +40,14 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column align="center" label="Name">
-          <template slot-scope="scope">
-            <span>{{ scope.row.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column align="center" label="Production Quantity">
-          <template slot-scope="scope">
-            <span>{{ scope.row.qty }}</span>
-          </template>
-        </el-table-column>
+
+        <el-table-column align="center" label="Name" prop="name" />
+
+        <el-table-column
+          align="center"
+          label="Production Quantity"
+          prop="qty"
+        />
         <el-table-column align="center" label="Ingredients">
           <template #default="scope">
             <span v-if="scope.row.is_available == 2">
@@ -72,20 +70,22 @@
         </el-table-column>
         <el-table-column align="center" label="Status" prop="status">
           <template #default="scope">
-            <span v-if="scope.row.status == 1">
-              <el-tag class="mx-1" type="warning" effect="plain">Planning</el-tag>
-            </span>
-            <span v-else-if="scope.row.status == 2">
-              <el-tag class="mx-1" type="success" effect="plain">Approved</el-tag>
-            </span>
-            <span v-else-if="scope.row.status == 0">
-              <el-tag class="mx-1" type="danger" effect="plain">Rejected</el-tag>
+            <span v-if="arrStatus.includes(scope.row.status)">
+              <el-tag :type="scope.row && scope.row.status | statusType">
+                {{ scope.row && scope.row.status | statusFilter }}
+              </el-tag>
             </span>
             <span v-else>
               <el-tag class="mx-1" type="warning" effect="plain">On Progress</el-tag>
             </span>
           </template>
         </el-table-column>
+        <el-table-column
+          align="center"
+          label="Nomor Sales Order"
+          prop="nomor_so"
+        />
+
         <el-table-column align="center" label="Actions" width="200">
           <template slot-scope="scope">
             <span v-if="scope.row.status == 1">
@@ -243,11 +243,15 @@ export default {
   name: 'WorkstationList',
   components: { Pagination },
   filters: {
+    statusType(status) {
+      const statusMap = { 1: 'warning', 0: 'danger', 2: 'success' };
+      return statusMap[status];
+    },
     statusFilter(status) {
       const statusMap = {
-        published: 'success',
-        draft: 'info',
-        deleted: 'danger',
+        1: 'Planning',
+        2: 'Approved',
+        0: 'Rejected',
       };
       return statusMap[status];
     },
@@ -266,6 +270,7 @@ export default {
       dialogNoteReject: false,
       LoadingForm: false,
       listLoadingStockIn: false,
+      arrStatus: [0, 1, 2],
       query: {
         page: 1,
         limit: 15,

@@ -26,6 +26,14 @@
         </template>
         <partial-tab-on-going />
       </el-tab-pane>
+      <el-tab-pane>
+        <template #label>
+          <span class="custom-tabs-label">
+            <span>Completed</span>
+          </span>
+        </template>
+        <partial-tab-completed />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -34,6 +42,7 @@
 import PartialTabDraft from './components/PartialTabDraft';
 import PartialTabOnGoing from './components/PartialTabOnGoing';
 import PartialTabJadwal from './components/PartialTabJadwal';
+import PartialTabCompleted from './components/PartialTabCompleted';
 
 export default {
   name: 'UnitList',
@@ -41,6 +50,7 @@ export default {
     PartialTabDraft,
     PartialTabOnGoing,
     PartialTabJadwal,
+    PartialTabCompleted,
   },
   filters: {
     statusFilter(status) {

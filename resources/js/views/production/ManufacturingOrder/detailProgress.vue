@@ -188,7 +188,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  content="Stop Or Finish"
+                  content="Stop OR Finish"
                   placement="top-start"
                 >
                   <el-button
@@ -214,6 +214,16 @@
                     @click="startWorkstation(scope.row.id)"
                   >
                     <svg-icon icon-class="play" />
+                  </el-button>
+
+                  <el-button
+                    class="filter-item"
+                    style="margin-left: 10px"
+                    type="primary"
+                    icon="el-icon-plus"
+                    @click="handleCreate"
+                  >
+                    {{ $t('table.add') }}
                   </el-button>
                 </el-tooltip>
               </span>
@@ -255,60 +265,58 @@
         </el-table>
       </el-card>
     </el-row>
-    <el-dialog
-      :title="'Form Stock OUT'"
-      :visible.sync="dialogFormStockOutVisible"
-      width="70%"
+    <el-drawer
+      title="Material"
+      :visible.sync="drawerTable"
+      direction="rtl"
+      size="40%"
     >
-      <div v-loading="LoadingStockOUT" class="form-container">
-        <el-form
-          ref="stockFormOut"
-          :model="newStockOUT"
-          label-position="left"
-          label-width="150px"
-          style="max-width: 100%"
-        >
-          <el-table
-            ref="multipleTable"
-            v-loading="listLoadingStockIn"
-            border
-            height="350"
-            :data="listStockIN"
-            style="width: 100%"
-            @selection-change="handleSelectionChange"
-          >
-            <el-table-column
-              type="selection"
-              width="55"
-              :selectable="canselectrow"
-            />
-            <el-table-column label="Date" width="200">
-              <template slot-scope="scope">
-                <span>{{
-                  scope.row.created_at | parseTime('{y}-{m}-{d} {h}:{i}')
-                }}</span>
-              </template>
-            </el-table-column>
-            <el-table-column prop="control_id" label="Control ID" width="180" />
-            <el-table-column prop="harga_beli" label="Harga Beli" width="120" />
-            <el-table-column
-              prop="description"
-              label="Description"
-              show-overflow-tooltip
-            />
-          </el-table>
-        </el-form>
-        <br>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormStockOutVisible = false">
-            {{ $t('table.cancel') }}
-          </el-button>
-          <el-button type="primary" @click="createStockOut()">
-            {{ $t('table.confirm') }}
-          </el-button>
-        </div>
-      </div>
-    </el-dialog>
+      <el-table v-loading="loadingMaterialUsed" :data="listMaterialUsed">
+        <el-table-column prop="name" label="Name" width="350" />
+        <el-table-column prop="control_id" label="Control ID" width="300">
+          <template #default="scope">
+            <template v-if="scope.row.edit">
+              <el-select
+                v-model="scope.row.control_id"
+                filterable
+                class="filter-item w-200"
+                placeholder="Please select control ID"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in controlIDOptions"
+                  :key="item.control_id"
+                  :label="item.control_id"
+                  :value="item.control_id"
+                />
+              </el-select>
+            </template>
+            <span v-else style="margin-left: 10px">
+              {{ scope.row.control_id }}
+            </span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="Action" width="80">
+          <template #default="scope">
+            <el-button
+              v-if="!scope.row.edit"
+              size="small"
+              type="warning"
+              @click="handleEdit(scope.$index, scope.row)"
+            >Edit</el-button>
+            <el-button
+              v-else
+              size="small"
+              type="success"
+              style="margin-left: 10px"
+              @click="handleChangeControlID(scope.$index, scope.row)"
+            >
+              OK
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-drawer>
   </div>
 </template>
 
@@ -319,8 +327,10 @@ import {
   showDetailMaterial,
   startWorkstation,
   pauseORFinish,
+  storeChangeControlID,
+  getMaterialUsed,
 } from '@/api/production/manufactur_order';
-import { fetchListStokIn } from '@/api/production/stock';
+import { showControlID } from '@/api/production/stock';
 
 export default {
   name: 'UnitList',
@@ -345,13 +355,18 @@ export default {
       dialogFormStockOutVisible: false,
       listStockIN: null,
       LoadingStockOUT: false,
-      listLoadingStockIn: false,
+      loadingMaterialUsed: false,
       listProduct: null,
       countDown: null,
       listMaterial: null,
       changeMaterial: true,
-      maxQTY: 0,
+      disabledMaterial: false,
       percentage: 0,
+      drawerTable: false,
+      paramsGetMaterialUsed: {},
+      listMaterialUsed: null,
+      controlIDOptions: [],
+      changeControlID: {},
       colors: [
         { color: '#f56c6c', percentage: 20 },
         { color: '#e6a23c', percentage: 40 },
@@ -364,6 +379,7 @@ export default {
   created() {
     const id = this.$route.params && this.$route.params.id;
     this.getList(id);
+    this.paramsGetMaterialUsed.manufacture_order_id = id;
   },
   methods: {
     getList(id) {
@@ -377,7 +393,6 @@ export default {
         });
         response.data.forEach((element, index) => {
           if (element.is_start != null && element.finish_at == null) {
-            console.log(element);
             this.changeMaterial = element.change_material;
           }
         });
@@ -450,34 +465,53 @@ export default {
         });
     },
     async handleStockOut(data) {
-      this.listLoadingStockIn = true;
-      this.resetFormStockOut();
-      this.dialogFormStockOutVisible = true;
-      this.maxQTY = data.qty;
-      fetchListStokIn(data.product_id).then((response) => {
-        this.listStockIN = response;
-        this.listLoadingStockIn = false;
+      this.loadingMaterialUsed = true;
+      this.drawerTable = true;
+      this.paramsGetMaterialUsed.product_id = data.product_id;
+      getMaterialUsed(this.paramsGetMaterialUsed).then((response) => {
+        this.listMaterialUsed = response.data;
+        this.listMaterialUsed = response.data.map((v) => {
+          this.$set(v, 'edit', false);
+          return v;
+        });
+        this.loadingMaterialUsed = false;
       });
-    },
-
-    canselectrow(row, index) {
-      if (this.newStockOUT.items === 'undefined') {
-        if (this.newStockOUT.items.length >= this.maxQTY) {
-          return '';
-        } else {
-          return row;
-        }
-      } else {
-        return row;
-      }
+      showControlID(this.paramsGetMaterialUsed).then((response) => {
+        this.controlIDOptions = response.data;
+      });
     },
     handleSelectionChange(val) {
       this.listMaterial;
       this.newStockOUT.items = val;
-      this.canselectrow();
     },
-    resetFormStockOut() {
-      this.newStock = { id: '', description: '', role: 'stock' };
+    handleEdit(index, row) {
+      this.resetNewForm();
+      this.listMaterialUsed.edit = false;
+      row.edit = true;
+      this.changeControlID.manufature_material_id = row.id;
+    },
+    handleChangeControlID(index, row) {
+      this.loadingMaterialUsed = true;
+      this.changeControlID = row;
+      storeChangeControlID(this.changeControlID)
+        .then((response) => {
+          this.$message({
+            type: 'success',
+            message: ' Successfully changed control ID',
+          });
+          this.handleStockOut(this.paramsGetMaterialUsed);
+          row.edit = false;
+          this.loadingMaterialUsed = false;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+    resetNewForm() {
+      this.changeControlID = {
+        manufature_material_id: '',
+        control_id: '',
+      };
     },
   },
 };
@@ -515,5 +549,10 @@ export default {
 }
 .el-button--small {
   border-radius: 10px;
+}
+</style>
+<style scoped>
+.dialog-footer button:first-child {
+  margin-right: 10px;
 }
 </style>

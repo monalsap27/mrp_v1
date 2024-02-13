@@ -35,3 +35,19 @@ export function showMutasi(query) {
     params: query,
   });
 }
+export function showControlID(data) {
+  return request({
+    url: '/production/product/stock/showControlID',
+    method: 'post',
+    data,
+  });
+}
+export function showByProduct(id) {
+  return request({
+    url: '/production/product/stock/showByProduct',
+    method: 'post',
+    data: {
+      id: id,
+    },
+  });
+}
